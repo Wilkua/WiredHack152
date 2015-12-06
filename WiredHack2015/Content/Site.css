@@ -1,0 +1,70 @@
+﻿body {
+    padding-top: 50px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+
+.center-block {
+	display: block;
+	width:50%;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.well {
+	margin-top: 50px;
+}
+
+@media (max-width: 768px) {
+	.center-block {
+		width: 100%;
+	}
+}
+
+@media (max-width: 955px) {
+	.center-block {
+		width: 80%;
+	}
+}
+
+
+#byBrandPie {
+	width: 50%;
+	height: 400px;
+}
+
+#byYearPie {
+	width: 50%;
+	height: 400px;
+}
+
+#overTime {
+	width: 100%;
+	height: 400px;
+}
+
+#panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+}
+
+
+.highcharts-container{width:100% !important; height:100% !important;}

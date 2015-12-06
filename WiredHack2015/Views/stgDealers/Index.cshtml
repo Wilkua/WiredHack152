@@ -1,0 +1,165 @@
+﻿@model IEnumerable<WiredHack2015.stgDealer>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles
+{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+}
+@section scripts
+{
+   <script type='text/javascript'>
+       $(function() {
+            $('.date-picker').datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+       })
+   </script>
+}
+
+<h2>Index</h2>
+
+@using (Html.BeginForm("Index", "stgDealers", FormMethod.Post)) { 
+<table class="table">
+    <tr>
+        <td>
+            @{
+                WiredHackEntities db = new WiredHackEntities();
+                SelectList Brandlist = new SelectList(db.tblBrands.Select(o=>o.BrandName).ToList());
+                SelectList CityList = new SelectList(db.tblCities.Select(o => o.City).ToList());
+                SelectList StateList = new SelectList(db.tblStates.Select(o => o.State).ToList());
+            }
+            @Html.DropDownList("Brand", Brandlist, String.Empty)
+        </td>
+        <td>
+           @Html.DropDownList("City", CityList, String.Empty)
+        </td>
+        <td>
+           @Html.DropDownList("State", StateList, String.Empty)
+        </td>
+        <td>
+           @Html.TextBox("DateBefore", "", new { @class = "date-picker" })
+        </td>
+        <td>
+            @Html.TextBox("DateAfter", "", new { @class = "date-picker" })
+            <input type="submit" />
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.Address1)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.Address2)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.City)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.State)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.Lat)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.Long)
+        </td>
+    </tr>
+    </table>
+}
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BrandName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SignedOn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DealerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ManfRegionCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Long)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DealerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SignedOn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DealerCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ManfRegionCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lat)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Long)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new {id = item.id}) |
+                    @Html.ActionLink("Details", "Details", new {id = item.id}) |
+                    @Html.ActionLink("Delete", "Delete", new {id = item.id})
+                </td>
+                
+            </tr>
+        }
+
+    </table>

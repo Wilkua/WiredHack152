@@ -1,0 +1,332 @@
+﻿@model WiredHack2015.Models.MapViewModel
+
+@{
+    ViewBag.Title = "Home";
+}
+
+@section styles{
+    @Styles.Render("~/Content/DashboardCss")
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+}
+@section scripts{
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo&libraries=visualization"></script>
+    @Scripts.Render("~/Scripts/googleHeatmap")
+
+    <script type="text/javascript">
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+
+    <script type="text/javascript">
+        var obj = 3;
+    </script>
+
+<script type='text/javascript'>
+        $(function() {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true
+        });
+    })
+</script>
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+    <script>
+        $(function () {
+
+            // Create the chart
+            $('#byBrandPie').highcharts({
+                chart: {
+                    height: 400,
+                    width: 400,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Dealer Count by Brand'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+                @Html.Raw(Model.BrandYearPieChartJSON)
+            });
+        });
+
+        $(function () {
+
+            // Create the chart
+            $('#byYearPie').highcharts({
+                chart: {
+                    height: 400,
+                    width: 400,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Dealer Growth by Year'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                @Html.Raw(Model.YearPieChartJSON)
+            });
+        });
+
+        $(function () {
+            $('#overTime').highcharts({
+                title: {
+                    text: 'Dealer Growth By Brand Over Time',
+                    x: -20 //center
+                },
+                subtitle: {
+                    text: '',
+                    x: -20
+                },
+                @Html.Raw(Model.BrandYearLineChartJSON)
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        @Html.Raw(Model.HeatmapScript)
+        @Html.Raw(Model.MarkerMapJSON)
+        @Html.Raw(Model.LatLongSearch)
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#mapSelect").click(function () {
+                $('#mapDiv').slideDown(600);
+                $('#tableDiv').slideUp(600);
+                $('#chartDiv').slideUp(600);
+
+                $('#mapSelect').css("visibility", "hidden");
+                $('#tableSelect').css("visibility", "visible");
+                $('#chartSelect').css("visibility", "visible");
+
+            });
+
+            $("#tableSelect").click(function () {
+                $('#mapDiv').slideUp(600);
+                $('#tableDiv').slideDown(600);
+                $('#chartDiv').slideUp(600);
+
+                $('#mapSelect').css("visibility", "visible");
+                $('#tableSelect').css("visibility", "hidden");
+                $('#chartSelect').css("visibility", "visible");
+            });
+
+            $("#chartSelect").click(function () {
+                $('#mapDiv').slideUp(600);
+                $('#tableDiv').slideUp(600);
+                $('#chartDiv').slideDown(600);
+
+                $('#mapSelect').css("visibility", "visible");
+                $('#tableSelect').css("visibility", "visible");
+                $('#chartSelect').css("visibility", "hidden");
+        });
+        });
+
+        $(function () {
+            $("#slider").slider({
+                range: "min",
+                value: 50,
+                min: 10,
+                max: 700,
+                step: 10,
+                slide: function (event, ui) {
+                    $("#sliderAmount").val(ui.value);
+                }
+            });
+            $("#sliderAmount").val($("#slider").slider("value"));
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+            <li>
+                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new{@class="navbar-form"}))
+                {
+        WiredHackEntities db = new WiredHackEntities();
+        SelectList Brandlist = new SelectList(db.tblBrands.Select(o => o.BrandName).ToList());
+        SelectList CityList = new SelectList(db.tblCities.Select(o => o.City).ToList());
+        SelectList StateList = new SelectList(db.tblStates.Select(o => o.State).ToList());
+    
+                    @Html.TextBox("ZipCode", null, new {@class = "form-control", placeholder = "Search zip..."})
+                    @Html.DropDownList("Brand", Brandlist, "Brand", new {@class = "form-control"})
+                    @Html.DropDownList("City", CityList, "City", new {@class = "form-control"})
+                    @Html.DropDownList("State", StateList, "State", new {@class = "form-control"})
+                    if (Model.DateBefore == System.DateTime.MinValue)
+                    {
+                        @Html.TextBox("DateBefore", string.Empty, new { @class = "date-picker form-control", placeholder = "Date Before" })
+                    }
+                    else
+                    { 
+                        @Html.TextBox("DateBefore", null, new {@class = "date-picker form-control", placeholder = "Date Before"})
+                    }
+                    if (Model.DateAfter == System.DateTime.MinValue)
+                    { 
+                        @Html.TextBox("DateBefore", string.Empty, new {@class = "date-picker form-control", placeholder = "Date Before"})
+                    }
+                    else
+                    {
+                        @Html.TextBox("DateAfter", null, new { @class = "date-picker form-control", placeholder = "Date After" })
+                    }
+
+        <br/>
+        <label for="sliderAmount" class="form-control">Mile Radius:</label>
+                    <p><input type="text" id="sliderAmount" name="Radius" readonly/>  Miles</p>
+        <div id="slider"></div>
+        <button type="submit" class="btn btn-default" style="margin-top: 10px;">Search</button>
+        }
+</li>
+        </ul>
+        <ul class="nav nav-sidebar">
+            <li>
+                <button class="btn btn-primary" id="mapSelect" style="visibility: hidden;">Map</button>
+                <button class="btn btn-primary" id="tableSelect">Table</button>
+                <button class="btn btn-primary" id="chartSelect">Charts</button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mapDiv" style="display: block;">
+        <div id="panel">
+            <button onclick="toggleHeatmap()" class="btn btn-primary">Toggle Heatmap</button>
+            <button onclick="changeGradient()" class="btn btn-primary">Change gradient</button>
+            <button onclick="changeRadius()" class="btn btn-primary">Change radius</button>
+        </div>
+        <div id="map-canvas"></div>
+    </div>
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
+            
+          <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().BrandName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().SignedOn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().ManfRegionCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address1)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address2)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().City)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().State)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().PostalCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lat)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Long)
+                </th>
+            </tr>
+
+            @foreach (var item in Model.DealersList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BrandName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DealerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SignedOn)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DealerCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ManfRegionCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Address1)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Address2)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.City)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.State)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostalCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lat)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Long)
+                    </td>
+                    
+                </tr>
+            }
+
+        </table>
+    </div>
+
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="chartDiv" style="display: none;">
+        <div class="row" style="height: 50%;">
+            <div class="col-md-6" id="byBrandPie">
+
+            </div>
+            <div class="col-md-6" id="byYearPie">
+
+            </div>
+        </div>
+        <div class="row" style="height: 50%;">
+            <div id="overTime">
+    
+    </div>
+        </div>
+    </div>
+    </div>

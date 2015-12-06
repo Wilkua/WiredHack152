@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WiredHack2015.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WiredHack2015_sitedata_SiteData" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:61499/SiteData.asmx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

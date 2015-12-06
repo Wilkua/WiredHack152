@@ -1,0 +1,440 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="WiredHackModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WiredHack.dbo.loadDealer' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="loadDealer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="BrandName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DealerName" Type="nvarchar" MaxLength="50" />
+          <Property Name="SignedOn" Type="datetime" />
+          <Property Name="DealerCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="ManfRegionCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address1" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address2" Type="nvarchar" MaxLength="50" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="State" Type="nchar" MaxLength="2" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="9" />
+          <Property Name="Lat" Type="numeric" Precision="10" Scale="6" />
+          <Property Name="Long" Type="numeric" Precision="10" Scale="6" />
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WiredHack.dbo.stgDealer' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="stgDealer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="BrandName" Type="varchar" MaxLength="50" />
+          <Property Name="DealerName" Type="varchar" MaxLength="50" />
+          <Property Name="SignedOn" Type="datetime" />
+          <Property Name="DealerCode" Type="varchar" MaxLength="50" />
+          <Property Name="ManfRegionCode" Type="varchar" MaxLength="50" />
+          <Property Name="Address1" Type="varchar" MaxLength="50" />
+          <Property Name="Address2" Type="varchar" MaxLength="50" />
+          <Property Name="City" Type="varchar" MaxLength="50" />
+          <Property Name="State" Type="char" MaxLength="2" />
+          <Property Name="PostalCode" Type="varchar" MaxLength="9" />
+          <Property Name="Lat" Type="float" />
+          <Property Name="Long" Type="float" />
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WiredHack.dbo.tblBrand' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblBrand">
+          <Key>
+            <PropertyRef Name="BrandId" />
+            <PropertyRef Name="BrandName" />
+          </Key>
+          <Property Name="BrandId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BrandName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WiredHack.dbo.tblCity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblCity">
+          <Key>
+            <PropertyRef Name="CityId" />
+            <PropertyRef Name="City" />
+          </Key>
+          <Property Name="CityId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WiredHack.dbo.tblState' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblState">
+          <Key>
+            <PropertyRef Name="StateId" />
+            <PropertyRef Name="State" />
+          </Key>
+          <Property Name="StateId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="State" Type="nchar" MaxLength="2" Nullable="false" />
+        </EntityType>
+        <Function Name="GetMissingRecordsLatAndLong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetRecordsByBrand" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Brand" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_getDealersByLatLong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="lat" Type="float" Mode="In" />
+          <Parameter Name="long" Type="float" Mode="In" />
+          <Parameter Name="distance" Type="int" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="BrandName" Type="varchar" MaxLength="50" />
+                <Property Name="DealerName" Type="varchar" MaxLength="50" />
+                <Property Name="SignedOn" Type="datetime" />
+                <Property Name="DealerCode" Type="varchar" MaxLength="50" />
+                <Property Name="ManfRegionCode" Type="varchar" MaxLength="50" />
+                <Property Name="Address1" Type="varchar" MaxLength="50" />
+                <Property Name="Address2" Type="varchar" MaxLength="50" />
+                <Property Name="City" Type="varchar" MaxLength="50" />
+                <Property Name="State" Type="char" MaxLength="2" />
+                <Property Name="PostalCode" Type="varchar" MaxLength="9" />
+                <Property Name="Lat" Type="float" />
+                <Property Name="Long" Type="float" />
+                <Property Name="id" Type="int" Nullable="false" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="udf_getLocationsByRadius" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="float">
+          <Parameter Name="lat1" Type="float" Mode="In" />
+          <Parameter Name="long1" Type="float" Mode="In" />
+          <Parameter Name="lat2" Type="float" Mode="In" />
+          <Parameter Name="long2" Type="float" Mode="In" />
+        </Function>
+        <Function Name="udf_Haversine" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="float">
+          <Parameter Name="lat1" Type="float" Mode="In" />
+          <Parameter Name="long1" Type="float" Mode="In" />
+          <Parameter Name="lat2" Type="float" Mode="In" />
+          <Parameter Name="long2" Type="float" Mode="In" />
+        </Function>
+        <Function Name="UpdateLatandLong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="lat" Type="float" Mode="In" />
+          <Parameter Name="lng" Type="float" Mode="In" />
+        </Function>
+        <EntityContainer Name="WiredHackModelStoreContainer">
+          <EntitySet Name="loadDealer" EntityType="Self.loadDealer" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [loadDealer].[BrandName] AS [BrandName], 
+    [loadDealer].[DealerName] AS [DealerName], 
+    [loadDealer].[SignedOn] AS [SignedOn], 
+    [loadDealer].[DealerCode] AS [DealerCode], 
+    [loadDealer].[ManfRegionCode] AS [ManfRegionCode], 
+    [loadDealer].[Address1] AS [Address1], 
+    [loadDealer].[Address2] AS [Address2], 
+    [loadDealer].[City] AS [City], 
+    [loadDealer].[State] AS [State], 
+    [loadDealer].[PostalCode] AS [PostalCode], 
+    [loadDealer].[Lat] AS [Lat], 
+    [loadDealer].[Long] AS [Long], 
+    [loadDealer].[id] AS [id]
+    FROM [dbo].[loadDealer] AS [loadDealer]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="stgDealer" EntityType="Self.stgDealer" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [stgDealer].[BrandName] AS [BrandName], 
+    [stgDealer].[DealerName] AS [DealerName], 
+    [stgDealer].[SignedOn] AS [SignedOn], 
+    [stgDealer].[DealerCode] AS [DealerCode], 
+    [stgDealer].[ManfRegionCode] AS [ManfRegionCode], 
+    [stgDealer].[Address1] AS [Address1], 
+    [stgDealer].[Address2] AS [Address2], 
+    [stgDealer].[City] AS [City], 
+    [stgDealer].[State] AS [State], 
+    [stgDealer].[PostalCode] AS [PostalCode], 
+    [stgDealer].[Lat] AS [Lat], 
+    [stgDealer].[Long] AS [Long], 
+    [stgDealer].[id] AS [id]
+    FROM [dbo].[stgDealer] AS [stgDealer]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="tblBrand" EntityType="Self.tblBrand" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [tblBrand].[BrandId] AS [BrandId], 
+    [tblBrand].[BrandName] AS [BrandName]
+    FROM [dbo].[tblBrand] AS [tblBrand]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="tblCity" EntityType="Self.tblCity" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [tblCity].[CityId] AS [CityId], 
+    [tblCity].[City] AS [City]
+    FROM [dbo].[tblCity] AS [tblCity]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="tblState" EntityType="Self.tblState" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [tblState].[StateId] AS [StateId], 
+    [tblState].[State] AS [State]
+    FROM [dbo].[tblState] AS [tblState]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="WiredHackModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="WiredHackEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="loadDealers" EntityType="WiredHackModel.loadDealer" />
+          <EntitySet Name="tblBrands" EntityType="WiredHackModel.tblBrand" />
+          <EntitySet Name="tblCities" EntityType="WiredHackModel.tblCity" />
+          <EntitySet Name="tblStates" EntityType="WiredHackModel.tblState" />
+          <EntitySet Name="stgDealers" EntityType="WiredHackModel.stgDealer" />
+          <FunctionImport Name="GetMissingRecordsLatAndLong" ReturnType="Collection(WiredHackModel.GetMissingRecordsLatAndLong_Result)" />
+          <FunctionImport Name="GetRecordsByBrand" ReturnType="Collection(WiredHackModel.GetRecordsByBrand_Result)">
+          <Parameter Name="Brand" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="UpdateLatandLong">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="lat" Mode="In" Type="Double" />
+            <Parameter Name="lng" Mode="In" Type="Double" />
+          </FunctionImport>
+          <FunctionImport Name="sp_getDealersByLatLong" IsComposable="true" ReturnType="Collection(WiredHackModel.sp_getDealersByLatLong_Result)">
+            <Parameter Name="lat" Mode="In" Type="Double" />
+            <Parameter Name="long" Mode="In" Type="Double" />
+            <Parameter Name="distance" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="loadDealer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="BrandName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DealerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SignedOn" Type="DateTime" Precision="3" />
+          <Property Name="DealerCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ManfRegionCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address2" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="State" Type="String" MaxLength="2" FixedLength="true" Unicode="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="9" FixedLength="false" Unicode="true" />
+          <Property Name="Lat" Type="Decimal" Precision="10" Scale="6" />
+          <Property Name="Long" Type="Decimal" Precision="10" Scale="6" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <EntityType Name="tblBrand">
+          <Key>
+            <PropertyRef Name="BrandId" />
+            <PropertyRef Name="BrandName" />
+          </Key>
+          <Property Name="BrandId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BrandName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblCity">
+          <Key>
+            <PropertyRef Name="CityId" />
+            <PropertyRef Name="City" />
+          </Key>
+          <Property Name="CityId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="City" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblState">
+          <Key>
+            <PropertyRef Name="StateId" />
+            <PropertyRef Name="State" />
+          </Key>
+          <Property Name="StateId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="State" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <EntityType Name="stgDealer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="BrandName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DealerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SignedOn" Type="DateTime" Precision="3" />
+          <Property Name="DealerCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ManfRegionCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Address1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Address2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="State" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="PostalCode" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="Lat" Type="Double" />
+          <Property Name="Long" Type="Double" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <ComplexType Name="GetMissingRecordsLatAndLong_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="Address1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="State" Nullable="true" MaxLength="2" />
+          <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="9" />
+        </ComplexType>
+        <ComplexType Name="GetRecordsByBrand_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="BrandName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="DealerName" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="SignedOn" Nullable="true" Precision="23" />
+          <Property Type="String" Name="DealerCode" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ManfRegionCode" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="State" Nullable="true" MaxLength="2" />
+          <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="9" />
+          <Property Type="Double" Name="Lat" Nullable="true" />
+          <Property Type="Double" Name="Long" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_getDealersByLatLong_Result">
+          <Property Type="String" Name="BrandName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="DealerName" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="SignedOn" Nullable="true" Precision="23" />
+          <Property Type="String" Name="DealerCode" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ManfRegionCode" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="State" Nullable="true" MaxLength="2" />
+          <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="9" />
+          <Property Type="Double" Name="Lat" Nullable="true" />
+          <Property Type="Double" Name="Long" Nullable="true" />
+          <Property Type="Int32" Name="id" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="WiredHackModelStoreContainer" CdmEntityContainer="WiredHackEntities">
+          <EntitySetMapping Name="loadDealers">
+            <EntityTypeMapping TypeName="WiredHackModel.loadDealer">
+              <MappingFragment StoreEntitySet="loadDealer">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="ManfRegionCode" ColumnName="ManfRegionCode" />
+                <ScalarProperty Name="DealerCode" ColumnName="DealerCode" />
+                <ScalarProperty Name="SignedOn" ColumnName="SignedOn" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblBrands">
+            <EntityTypeMapping TypeName="WiredHackModel.tblBrand">
+              <MappingFragment StoreEntitySet="tblBrand">
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+                <ScalarProperty Name="BrandId" ColumnName="BrandId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCities">
+            <EntityTypeMapping TypeName="WiredHackModel.tblCity">
+              <MappingFragment StoreEntitySet="tblCity">
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="CityId" ColumnName="CityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblStates">
+            <EntityTypeMapping TypeName="WiredHackModel.tblState">
+              <MappingFragment StoreEntitySet="tblState">
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="StateId" ColumnName="StateId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="stgDealers">
+            <EntityTypeMapping TypeName="WiredHackModel.stgDealer">
+              <MappingFragment StoreEntitySet="stgDealer">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="ManfRegionCode" ColumnName="ManfRegionCode" />
+                <ScalarProperty Name="DealerCode" ColumnName="DealerCode" />
+                <ScalarProperty Name="SignedOn" ColumnName="SignedOn" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetMissingRecordsLatAndLong" FunctionName="WiredHackModel.Store.GetMissingRecordsLatAndLong">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WiredHackModel.GetMissingRecordsLatAndLong_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetRecordsByBrand" FunctionName="WiredHackModel.Store.GetRecordsByBrand">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WiredHackModel.GetRecordsByBrand_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="SignedOn" ColumnName="SignedOn" />
+                <ScalarProperty Name="DealerCode" ColumnName="DealerCode" />
+                <ScalarProperty Name="ManfRegionCode" ColumnName="ManfRegionCode" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UpdateLatandLong" FunctionName="WiredHackModel.Store.UpdateLatandLong" />
+          <FunctionImportMapping FunctionImportName="sp_getDealersByLatLong" FunctionName="WiredHackModel.Store.sp_getDealersByLatLong">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WiredHackModel.sp_getDealersByLatLong_Result">
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="SignedOn" ColumnName="SignedOn" />
+                <ScalarProperty Name="DealerCode" ColumnName="DealerCode" />
+                <ScalarProperty Name="ManfRegionCode" ColumnName="ManfRegionCode" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

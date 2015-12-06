@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Upload";
+}
+
+<div class="well center-block">
+    <hgroup class="center-block">
+        <h2 class="text-center">Upload</h2>
+        <h6 class="text-center">*** Worksheet must be named "Dealers" ***</h6>
+    </hgroup>
+    @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        if (ViewBag.Message != null)
+        {
+            <p class="text-danger">@ViewBag.Message</p>
+        }
+        <div class="form center-block">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <label for="xslx_file" class="control-label">XLSX File</label>
+            <input type="file" id="xslx_file" name="xlsx_file" class="form-control" />
+        </div>
+        <br/>
+        <div class="form-group center-block text-center">
+            <div class="col-xs-12">
+                <input type="submit" name="upload" value="Upload" class="btn btn-primary" />
+            </div>
+        </div>
+
+    }
+</div>
