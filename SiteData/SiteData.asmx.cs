@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Net;
 using System.Threading;
-using System.Web;
 using System.Web.Services;
 using System.Xml.Linq;
 
@@ -14,17 +12,17 @@ namespace SiteData
     /// <summary>
     /// Summary description for SiteData
     /// </summary>
-    [WebService(Namespace = "http://tempuri.org/")]
+    [WebService(Namespace = "http://drescherdigital.com")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
     // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
     // [System.Web.Script.Services.ScriptService]
     public class SiteData : System.Web.Services.WebService
     {
-        
+        private string gaKey = "AIzaSyDXDzf1gPVF0cQIsA2iLaVYCpXA0FNPXm0";
+
         [WebMethod]
         public bool UpdateDataTable()
-        
         {
             try
             {
@@ -32,7 +30,7 @@ namespace SiteData
 
                 foreach (var i in Records)
                 {
-                    WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address=" + i.Value + "&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
+                    WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address=" + i.Value + "&key=" + gaKey);
                     WebResponse response = (WebResponse)request.GetResponse();
 
                     WebHeaderCollection header = response.Headers;
@@ -55,8 +53,6 @@ namespace SiteData
         private Dictionary<int,String> GetAddresss()
         {
             Dictionary<int, String> records = new Dictionary<int, string>();
-
-
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["WiredHack"].ConnectionString))
             {
