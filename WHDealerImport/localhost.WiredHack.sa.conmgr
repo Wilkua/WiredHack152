@@ -5,6 +5,10 @@
   DTS:CreationName="OLEDB">
   <DTS:ObjectData>
     <DTS:ConnectionManager
-      DTS:ConnectionString="Data Source=localhost;Initial Catalog=WiredHack;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      DTS:ConnectionString="Data Source=dbx.drescherdigital.com;User ID=sa;Initial Catalog=WiredHack;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;">
+      <DTS:Password
+        DTS:Name="Password"
+        Sensitive="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAP8Fm/oVSJkSGTr3OvIux8wAAAAACAAAAAAAQZgAAAAEAACAAAAAF3NvCEk6OC4kjqnQi7GRrCQ7uC8T9ktVZTZ83DmJf9AAAAAAOgAAAAAIAACAAAADJ248YaSILN/Rz/d4qhUfGXMUbmLTCWkWsEtTfDVOBmYAAAAAC2pp80cfOBLpk0zkAYZR3830jzNpDK/rf2oRsHwdt7+Dw3JYwl7axc06SCWQmEgfCbnQ6vG5iVBDOdJXIrj6nNy1vZLtJA2Mr8/nrFaKcFtzBAoKr5V7besF0CsHXxD4loZLblmny1LFTucJTpq7tFxvdqVrYFAcFw5d8AnWZdEAAAADJ4pXHerkF6w5W+rD9WwgoHJfZXM4z5MlgI3IShYSH2y/b5yU3z/8e7JNBs6YMDUVGcQr4YwRUtPWMPi02vEEu</DTS:Password>
+    </DTS:ConnectionManager>
   </DTS:ObjectData>
 </DTS:ConnectionManager>

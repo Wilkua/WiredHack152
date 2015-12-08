@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="23"
-  DTS:VersionGUID="{F9D9A3C6-01EC-4383-B768-C9F47E367A7E}">
+  DTS:VersionBuild="26"
+  DTS:VersionGUID="{3615581C-B2D3-4C3E-B2D2-B4F6431D8955}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -26,6 +26,28 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[WebService Connection]"
+      DTS:CreationName="HTTP"
+      DTS:DTSID="{7D10CF6B-533E-48DF-B2D4-938792250F2F}"
+      DTS:ObjectName="WebService Connection">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="http://iis.drescherdigital.com:8080/SiteData.asmx?WSDL">
+          <DTS:HttpConnection
+            DTS:ServerURL="http://iis.drescherdigital.com:8080/SiteData.asmx?WSDL">
+            <DTS:Property
+              DTS:Name="ServerPassword"
+              Sensitive="1"
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAP8Fm/oVSJkSGTr3OvIux8wAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAA7TG4YPCx8VjHSayQlaZaBvQWtaVTQccYC6F8XKIVMwAAAAAAOgAAAAAIAACAAAABrLk8bc12aqG1R4bkqnuQ/9To2ecmHh4pMrZ9ZFsdJlhAAAAD/xxuXZ/EPbqKDSHQaGTB9QAAAAKQ4oI3GPktVh8/NVeulUNH52As76maUxMEbeALCO5FotOuyQqweFPw4C4KfBBTECFH1oXl7TDUcp/X2TfLxGHs</DTS:Property>
+            <DTS:Property
+              DTS:Name="ProxyPassword"
+              Sensitive="1"
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAP8Fm/oVSJkSGTr3OvIux8wAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABiUmDg/6KY9N0pdmSxbOiZyrUomO0EsDtc/2QTLyNC5QAAAAAOgAAAAAIAACAAAABleXgqeBRPcwlKnF/HMigWB4T9UBrcfqbccKjEM+j2KRAAAADX960ZlvGEvLjF31Ct0alcQAAAADmyO+8at2vJw9vmC6lbxJ72K4C62Cl4jxtbqbcnFKs5sLJufDfaDC7zb8AC6kkkTWwKA0YPkL8FVAp/e44mX8Y</DTS:Property>
+          </DTS:HttpConnection>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -42,6 +64,16 @@
     </DTS:PackageParameter>
   </DTS:PackageParameters>
   <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{9F44C88B-740F-4B77-9575-FCD239EBD12B}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="Nothing">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{6E2CD56D-72F4-4AAB-AAD0-654DB9AC3109}"
@@ -393,7 +425,7 @@
                     <property
                       dataType="System.String"
                       description="Specifies the name of the database object used to open a rowset."
-                      name="OpenRowset">[dbo].[loadDealer]</property>
+                      name="OpenRowset">[dbo].[stgDealer]</property>
                     <property
                       dataType="System.String"
                       description="Specifies the variable that contains the name of the database object used to open a rowset."
@@ -521,12 +553,14 @@
                         isUsed="True">
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[BrandName]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="BrandName" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[DealerName]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="DealerName" />
                         <externalMetadataColumn
@@ -535,51 +569,54 @@
                           name="SignedOn" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[DealerCode]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="DealerCode" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[ManfRegionCode]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="ManfRegionCode" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[Address1]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="Address1" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[Address2]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="Address2" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[City]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="50"
                           name="City" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[State]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="2"
                           name="State" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[PostalCode]"
-                          dataType="wstr"
+                          codePage="1252"
+                          dataType="str"
                           length="9"
                           name="PostalCode" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[Lat]"
-                          dataType="numeric"
-                          name="Lat"
-                          precision="10"
-                          scale="6" />
+                          dataType="r8"
+                          name="Lat" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[Long]"
-                          dataType="numeric"
-                          name="Long"
-                          precision="10"
-                          scale="6" />
+                          dataType="r8"
+                          name="Long" />
                         <externalMetadataColumn
                           refId="Package\Foreach Loop Container\ImportDealers\loadDealer.Inputs[OLE DB Destination Input].ExternalColumns[id]"
                           dataType="i4"
@@ -642,7 +679,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Truncate Load Table"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -661,7 +698,21 @@
       DTS:TaskContact="Web Service Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
       DTS:ThreadHint="0">
       <DTS:Variables />
-      <DTS:ObjectData />
+      <DTS:ObjectData>
+        <WSTask:WebServiceTaskData
+          WSTask:ConnectionName="{7D10CF6B-533E-48DF-B2D4-938792250F2F}"
+          WSTask:Service="SiteData"
+          WSTask:WSDLFile="C:\Users\badwolf\file.wsdl"
+          WSTask:OverwriteWSDLFile="True"
+          WSTask:OutputType="Variable"
+          WSTask:OutputLocation="User::Nothing" xmlns:WSTask="www.microsoft.com/sqlserver/dts/tasks/webservicetask">
+          <WSTask:MethodInfo
+            WSTask:MethodName="UpdateDataTable"
+            WSTask:MessageName="">
+            <WSTask:Documentation></WSTask:Documentation>
+          </WSTask:MethodInfo>
+        </WSTask:WebServiceTaskData>
+      </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
   <DTS:PrecedenceConstraints>
@@ -673,6 +724,14 @@
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint"
       DTS:To="Package\Foreach Loop Container" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{7076B61E-B20A-40EC-A1DD-AF86694663AE}"
+      DTS:From="Package\Foreach Loop Container"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Web Service Task" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
@@ -701,6 +760,10 @@
           Size="176,42"
           Id="Package\Truncate Load Table"
           TopLeft="78,41" />
+        <NodeLayout
+          Size="162,42"
+          Id="Package\Web Service Task"
+          TopLeft="86,380" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
           TopLeft="167,83">
@@ -723,10 +786,28 @@
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="162,42"
-          Id="Package\Web Service Task"
-          TopLeft="83,400" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="167.5,340">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,40"
+              Start="0,0"
+              End="0,32.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
