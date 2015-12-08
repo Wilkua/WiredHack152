@@ -19,7 +19,7 @@ namespace SiteData
     // [System.Web.Script.Services.ScriptService]
     public class SiteData : System.Web.Services.WebService
     {
-        private string gaKey = "AIzaSyDXDzf1gPVF0cQIsA2iLaVYCpXA0FNPXm0";
+        private string gaKey = "AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4";
 
         [WebMethod]
         public bool UpdateDataTable()
