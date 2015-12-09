@@ -69,7 +69,7 @@ namespace WiredHack2015.Controllers
                 viewModel.LatLongSearch = "var Templat = \""+lat+"\";\nvar Templong = \""+lng+"\";\nvar Zoomin = 10;";
                 //list = (IEnumerable<stgDealer>)db.sp_getDealersByLatLong(lat, lng, 50).ToList();
                 
-                foreach (var item in db.sp_getDealersByLatLong(lat, lng, viewModel.Radius).ToList())
+                foreach (var item in db.sp_getDealersByLatLong(viewModel.Radius, lat, lng).ToList())
                 {
                     transList.Add(new stgDealer
                     {
