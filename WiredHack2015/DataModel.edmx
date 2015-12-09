@@ -5,6 +5,16 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="WiredHackModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="PostalCodeLatLong">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="9" Nullable="false" />
+          <Property Name="Lat" Type="float" Nullable="false" />
+          <Property Name="Long" Type="float" Nullable="false" />
+          <Property Name="CacheDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="stgDealer">
           <Key>
             <PropertyRef Name="id" />
@@ -38,6 +48,7 @@
           <Parameter Name="lng" Type="float" Mode="In" />
         </Function>
         <EntityContainer Name="WiredHackModelStoreContainer">
+          <EntitySet Name="PostalCodeLatLong" EntityType="Self.PostalCodeLatLong" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="stgDealer" EntityType="Self.stgDealer" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -60,6 +71,7 @@
             <Parameter Name="lat" Mode="In" Type="Double" />
             <Parameter Name="lng" Mode="In" Type="Double" />
           </FunctionImport>
+          <EntitySet Name="PostalCodeLatLongs" EntityType="WiredHackModel.PostalCodeLatLong" />
         </EntityContainer>
         <EntityType Name="stgDealer">
           <Key>
@@ -116,6 +128,16 @@
           <Property Type="Double" Name="Long" Nullable="true" />
           <Property Type="Int32" Name="id" Nullable="false" />
         </ComplexType>
+        <EntityType Name="PostalCodeLatLong">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PostalCode" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="true" />
+          <Property Name="Lat" Type="Double" Nullable="false" />
+          <Property Name="Long" Type="Double" Nullable="false" />
+          <Property Name="CacheDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -172,6 +194,17 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="UpdateLatandLong" FunctionName="WiredHackModel.Store.UpdateLatandLong" />
+          <EntitySetMapping Name="PostalCodeLatLongs">
+            <EntityTypeMapping TypeName="WiredHackModel.PostalCodeLatLong">
+              <MappingFragment StoreEntitySet="PostalCodeLatLong">
+                <ScalarProperty Name="CacheDate" ColumnName="CacheDate" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           
         </EntityContainerMapping>
       </Mapping>

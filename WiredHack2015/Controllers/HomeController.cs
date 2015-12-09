@@ -53,22 +53,42 @@ namespace WiredHack2015.Controllers
 
             IEnumerable<stgDealer> list = db.stgDealers;
             List<stgDealer> transList = new List<stgDealer>();
-
-            if ( !String.IsNullOrEmpty(viewModel.ZipCode) )
+            float lat;
+            float lng;
+            if (String.IsNullOrEmpty(viewModel.ZipCode)) { 
+            if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {
-                WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
-                    + viewModel.ZipCode + ",&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
-                WebResponse response = (WebResponse)request.GetResponse();
+                    try {
+                        WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
+                            + viewModel.ZipCode + ",&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
+                        WebResponse response = (WebResponse)request.GetResponse();
 
-                //WebHeaderCollection header = response.Headers;
+                        //WebHeaderCollection header = response.Headers;
 
-                XElement ele = XElement.Load(response.GetResponseStream());
+                        XElement ele = XElement.Load(response.GetResponseStream());
+                        lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
+                        lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
 
-                float lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
-                float lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
-                viewModel.LatLongSearch = "var Templat = \""+lat+"\";\nvar Templong = \""+lng+"\";\nvar Zoomin = 10;";
-                //list = (IEnumerable<stgDealer>)db.sp_getDealersByLatLong(lat, lng, 50).ToList();
-                
+                        db.PostalCodeLatLongs.Add(new PostalCodeLatLong()
+                        {
+                            Lat = lat,
+                            Long = lng,
+                            PostalCode = viewModel.ZipCode
+                        });
+
+                        db.SaveChanges();
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
+            }
+            else {
+                lat = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Lat.ToString());
+                lng = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Long.ToString());
+            }
+            viewModel.LatLongSearch = "var Templat = \"" + lat + "\";\nvar Templong = \"" + lng + "\";\nvar Zoomin = 10;";
+                            
                 foreach (var item in db.sp_getDealersByLatLong(viewModel.Radius, lat, lng).ToList())
                 {
                     transList.Add(new stgDealer

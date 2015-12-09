@@ -37,6 +37,8 @@ public partial class WiredHackEntities : DbContext
 
     public virtual DbSet<stgDealer> stgDealers { get; set; }
 
+    public virtual DbSet<PostalCodeLatLong> PostalCodeLatLongs { get; set; }
+
 
     public virtual ObjectResult<GetMissingRecordsLatAndLong_Result> GetMissingRecordsLatAndLong()
     {
