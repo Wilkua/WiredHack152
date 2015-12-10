@@ -7,8 +7,7 @@
 	margin-top: 20px;
 }
 
-html, body, .body-content,
-.row, .main, #map-canvas {
+html, body, .body-content, .main, #map-canvas {
 	height: 100%;
 }
 @media (max-width: 768px) {
@@ -58,4 +57,30 @@ html, body, .body-content,
 
 .main {
 	padding: 0 0 0 0;
+}
+.btn-primary.active {
+    background-color: #2B4E8D;
+    border-color: #2544A1;
+}
+
+.navbar-inverse {
+    background-color: #222;
+}
+.mini-navigator {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #eee;
+}
+.navigator {
+    height: inherit;
+}
+.navigator-btn {
+    margin-left: 4%;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+.row-container {
+    height: Calc(100% - inherit);
 }

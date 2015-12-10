@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles{
+    @Styles.Render("~/Content/DashboardCss")
+}
+@section scripts{
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
+    @Scripts.Render("~/Scripts/MainScripts")
+    <script type="text/javascript">
+        $(function() {
+            $('.date-picker').datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+        })
+    </script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+}
+
+<div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+            <li>
+                <!--Sidebar information-->
+            </li>
+        </ul>
+    </div>
+    <div class="navigator">
+        <!--mini-navigator-->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 text-center mini-navigator">
+            <button class="btn btn-primary navigator-btn active" id="mapSelect">Map</button>
+            <button class="btn btn-primary navigator-btn" id="tableSelect">Table</button>
+            <button class="btn btn-primary navigator-btn" id="chartSelect">Charts</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mapDiv" style="display: block;">
+            <div id="panel">
+                <!--Overlay-->
+                <button onclick="toggleHeatmap()" class="btn btn-primary">Toggle Heatmap</button>
+                <button onclick="changeGradient()" class="btn btn-primary">Change gradient</button>
+                <button onclick="changeRadius()" class="btn btn-primary">Change radius</button>
+            </div>
+            <div id="map-canvas">l</div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
+            <!--Table Information-->
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="chartDiv" style="display: none;">
+            <div class="row" id="pieCharts" style="height: 50%;">
+                <!--Chart Information-->
+                <div class="col-md-6" id="byBrandPie">l</div>
+                <div class="col-md-6" id="byYearPie">l</div>
+            </div>
+            <div class="row" id="lineChart" style="height: 50%;">
+                <div class="col-md-12" id="overTime">l</div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -5,13 +5,14 @@
 }
 
 @section styles{
-    @Styles.Render("~/Content/DashboardCss")
 
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+    @Styles.Render("~/Content/DashboardCss")
 }
 @section scripts{
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&callback=initMap"></script>
-    @Scripts.Render("~/Scripts/googleHeatmap")
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization&callback=initMap"></script>
+    @Scripts.Render("~/Scripts/MainScripts")
 
     <script type="text/javascript">
         google.maps.event.addDomListener(window, 'load', initialize);
@@ -119,38 +120,7 @@
         @Html.Raw(Model.LatLongSearch)
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#mapSelect").click(function () {
-                $('#mapDiv').slideDown(600);
-                $('#tableDiv').slideUp(600);
-                $('#chartDiv').slideUp(600);
-
-                $('#mapSelect').css("visibility", "hidden");
-                $('#tableSelect').css("visibility", "visible");
-                $('#chartSelect').css("visibility", "visible");
-
-            });
-
-            $("#tableSelect").click(function () {
-                $('#mapDiv').slideUp(600);
-                $('#tableDiv').slideDown(600);
-                $('#chartDiv').slideUp(600);
-
-                $('#mapSelect').css("visibility", "visible");
-                $('#tableSelect').css("visibility", "hidden");
-                $('#chartSelect').css("visibility", "visible");
-            });
-
-            $("#chartSelect").click(function () {
-                $('#mapDiv').slideUp(600);
-                $('#tableDiv').slideUp(600);
-                $('#chartDiv').slideDown(600);
-
-                $('#mapSelect').css("visibility", "visible");
-                $('#tableSelect').css("visibility", "visible");
-                $('#chartSelect').css("visibility", "hidden");
-        });
-        });
+        
 
         $(function () {
             $("#slider").slider({
@@ -210,7 +180,7 @@
         </ul>
         <ul class="nav nav-sidebar">
             <li>
-                <button class="btn btn-primary" id="mapSelect" style="visibility: hidden;">Map</button>
+                <button class="btn btn-primary active" id="mapSelect">Map</button>
                 <button class="btn btn-primary" id="tableSelect">Table</button>
                 <button class="btn btn-primary" id="chartSelect">Charts</button>
             </li>
@@ -229,9 +199,10 @@
             
           <table class="table">
             <tr>
-                <th>
+            @*<th>
                     @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().BrandName)
                 </th>
+               *@
                 <th>
                     @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerName)
                 </th>
@@ -270,9 +241,10 @@
             @foreach (var item in Model.DealersList)
             {
                 <tr>
-                    <td>
+                @*<td>
                         @Html.DisplayFor(modelItem => item.BrandName)
                     </td>
+                   *@
                     <td>
                         @Html.DisplayFor(modelItem => item.DealerName)
                     </td>

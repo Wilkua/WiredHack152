@@ -34,6 +34,11 @@ namespace WiredHack2015.Controllers
             return View(viewModel);
         }
 
+        public ActionResult IndexRevision()
+        {
+            return View();
+        }
+
 
         [HttpPost]
         //public ActionResult Index(FormCollection form)
