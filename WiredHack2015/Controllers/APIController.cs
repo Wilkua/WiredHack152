@@ -1,21 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Script.Serialization;
-using System.Web.Mvc;
 using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using System.IO;
+using System.Json;
+
 
 namespace WiredHack2015.Controllers
 {
     public class APIController : Controller
     {
         private WiredHackEntities dbContext = new WiredHackEntities();
+        private string gaKey = "AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4";
 
-        private void GetLatLongForPostalCode(string postalcode, out float postLat, out float postLng)
+        private bool GetLatLongForPostalCode(string postalcode, out float postLat, out float postLng)
         {
             postLat = 0.0f;
             postLng = 0.0f;
+
+            var postalCodeLocation = dbContext.PostalCodeLatLongs
+                .Where(s => s.PostalCode == postalcode)
+                .Select(s => new { s.Lat, s.Long, s.CacheDate }).FirstOrDefault();
+
+            // If there isn't any postal code data we need to create it
+            if ((postalCodeLocation == null)
+                || ((DateTime.Now - postalCodeLocation.CacheDate).TotalDays > 30))
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/json?address=" + postalcode + "&key=" + gaKey);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                
+                //WebHeaderCollection header = response.Headers;
+
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                string responseString = reader.ReadToEnd();
+
+                reader.Close(); // Also closes the WebResponse stream object
+                response.Close();
+
+                //XElement ele = XElement.Load(response.GetResponseStream());
+                var geoData = new JavaScriptSerializer().Deserialize(responseString);
+
+                float lat = geoData.result.geometry.location.lat;
+                float lng = geoData.result.geometry.location.lng;
+
+                //float lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
+                //float lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
+            }
+            // Return the cached latitude and longitude data
+            else
+            {
+                postLat = (float)postalCodeLocation.Lat;
+                postLng = (float)postalCodeLocation.Long;
+            }
+
+            return true;
         }
 
         // GET: API
@@ -24,7 +65,7 @@ namespace WiredHack2015.Controllers
             return "<!DOCTYPE html><html lang=\"en\"><head><title></title><meta charset=\"utf-8\" /></head><body></body></html>";
         }
 
-        // GET: API/HeatmapData?
+        // GET: API/HeatmapData?postalcode=xxxxx&brand=xxxx&city=xxxx&state=xxxxx&datebefore=xxxx&dateafter=xxxxx&distance=0000
         public string HeatmapData(string postalcode, string brand, string city, string state, string datebefore, string dateafter, int? distance)
         {
             if (!dbContext.Database.Exists())
