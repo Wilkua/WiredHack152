@@ -53,8 +53,8 @@ namespace WiredHack2015.Controllers
 
             IEnumerable<stgDealer> list = db.stgDealers;
             List<stgDealer> transList = new List<stgDealer>();
-            float lat;
-            float lng;
+            float lat= 0;
+            float lng = 0;
             if (String.IsNullOrEmpty(viewModel.ZipCode)) { 
             if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {

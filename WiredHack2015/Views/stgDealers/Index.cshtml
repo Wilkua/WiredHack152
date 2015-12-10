@@ -6,7 +6,7 @@
 }
 @section styles
 {
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 }
 @section scripts
@@ -29,9 +29,9 @@
         <td>
             @{
                 WiredHackEntities db = new WiredHackEntities();
-                SelectList Brandlist = new SelectList(db.tblBrands.Select(o=>o.BrandName).ToList());
-                SelectList CityList = new SelectList(db.tblCities.Select(o => o.City).ToList());
-                SelectList StateList = new SelectList(db.tblStates.Select(o => o.State).ToList());
+                SelectList Brandlist = new SelectList(db.stgDealers.Select(o=>o.BrandName).ToList());
+                SelectList CityList = new SelectList(db.stgDealers.Select(o => o.City).ToList());
+                SelectList StateList = new SelectList(db.stgDealers.Select(o => o.State).ToList());
             }
             @Html.DropDownList("Brand", Brandlist, String.Empty)
         </td>
