@@ -1,8 +1,7 @@
 ﻿var map, pointarray, heatmap;
 
-var heatmapData = [];
 
-var taxiData = [
+var td = [
   new google.maps.LatLng(37.782551, -122.445368),
   new google.maps.LatLng(37.782745, -122.444586),
   new google.maps.LatLng(37.782842, -122.443688),
