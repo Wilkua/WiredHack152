@@ -21,6 +21,68 @@ namespace SiteData
     {
         private string gaKey = "AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4";
 
+        /* Read these notes please 
+            I need you to add this function to the api and class for the response it will return in json or whatever. If json we can deserialize it using JSON.net as a library if your still having issues with System.Web.Json
+            I also want to see about moving all of this service to it. So its just the one service. 
+            */
+
+        public class GeoCodeLatLongResponse
+        {
+            public String Status { get; set; }
+            public float lat { get; set; }
+            public float lng { get; set; }
+        }
+
+        public GeoCodeLatLongResponse GetLatLongResponse(string address)
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
+                    + address + ",&key=AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4");
+                WebResponse response = (WebResponse)request.GetResponse();
+
+                //WebHeaderCollection header = response.Headers;
+
+                XElement ele = XElement.Load(response.GetResponseStream());
+                var status = ele.Element("status").Value;
+
+                switch (status)
+                {
+                    case "OK":
+                        return new GeoCodeLatLongResponse()
+                        {
+                            lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value),
+                            lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value),
+                            Status = status
+                        };
+                    case "UNKNOWN_ERROR":
+                        var latlong = GetLatLongResponse(address);
+                        if (latlong.Status == "OK")
+                        {
+
+                            return new GeoCodeLatLongResponse()
+                            {
+                                lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value),
+                                lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value),
+                                Status = status
+                            };
+                        }
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return new GeoCodeLatLongResponse()
+            {
+                lat = 0,
+                lng = 0,
+                Status = "Error"
+            };
+        }
+
         [WebMethod]
         public bool UpdateDataTable()
         {
@@ -30,17 +92,13 @@ namespace SiteData
 
                 foreach (var i in Records)
                 {
-                    WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address=" + i.Value + "&key=" + gaKey);
-                    WebResponse response = (WebResponse)request.GetResponse();
+                    var response = GetLatLongResponse(i.Value);
 
-                    WebHeaderCollection header = response.Headers;
-
-                    XElement ele = XElement.Load(response.GetResponseStream());
-
-                    float lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
-                    float lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
-                    Thread.Sleep(500);
-                    UpdateRecord(i.Key, lat, lng);
+                    if (response.Status == "OK")
+                    {                  
+                        Thread.Sleep(500);
+                        UpdateRecord(i.Key, response.lat, response.lng);
+                    }
                 }
             }
             catch (Exception)
