@@ -54,6 +54,9 @@ html, body, .body-content, .main, #map-canvas {
   color: #fff;
   background-color: #428bca;
 }
+.full-row {
+    height: Calc(100% - 44px);
+}
 
 .main {
 	padding: 0 0 0 0;
