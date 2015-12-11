@@ -11,14 +11,14 @@
 }
 @section scripts
 {
-   <script type='text/javascript'>
-       $(function() {
+    <script type='text/javascript'>
+        $(function() {
             $('.date-picker').datepicker({
                 changeMonth: true,
                 changeYear: true
             });
-       })
-   </script>
+        })
+    </script>
 }
 
 <h2>Index</h2>
@@ -67,7 +67,7 @@
             @Html.DisplayNameFor(model => model.Lat)
         </td>
         <td>
-            @Html.DisplayNameFor(model => model.Long)
+            @Html.DisplayNameFor(model => model.Lng)
         </td>
     </tr>
     </table>
@@ -109,7 +109,7 @@
                 @Html.DisplayNameFor(model => model.Lat)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Long)
+                @Html.DisplayNameFor(model => model.Lng)
             </th>
             <th></th>
         </tr>
@@ -151,7 +151,7 @@
                     @Html.DisplayFor(modelItem => item.Lat)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Long)
+                    @Html.DisplayFor(modelItem => item.Lng)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new {id = item.id}) |

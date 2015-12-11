@@ -1,4 +1,5 @@
-﻿@{
+﻿@using WiredHack2015.Controllers
+@{
     ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -10,12 +11,6 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
     @Scripts.Render("~/Scripts/MainScripts")
     <script type="text/javascript">
-        $(function() {
-            $('.date-picker').datepicker({
-                changeMonth: true,
-                changeYear: true
-            });
-        });
         $(function () {
             $("#slider").slider({
                 range: "min",
@@ -28,17 +23,152 @@
                 }
             });
             $("#Radius").val($("#slider").slider("value"));
+
+            $(document).ready(function () {
+                $("#mapSelect").click(function () {
+                    $("#mapDiv").slideDown(600);
+                    $("#tableDiv").slideUp(600);
+                    $("#chartDiv").slideUp(600);
+
+                    $("#mapSelect").addClass("active");
+                    $("#tableSelect").removeClass("active");
+                    $("#chartSelect").removeClass("active");
+
+                });
+
+                $("#tableSelect").click(function () {
+                    $("#mapDiv").slideUp(600);
+                    $("#tableDiv").slideDown(600);
+                    $("#chartDiv").slideUp(600);
+
+                    $("#mapSelect").removeClass("active");
+                    $("#tableSelect").addClass("active");
+                    $("#chartSelect").removeClass("active");
+                });
+
+                $("#chartSelect").click(function () {
+                    $("#mapDiv").slideUp(600);
+                    $("#tableDiv").slideUp(600);
+                    $("#chartDiv").slideDown(600);
+
+                    $("#mapSelect").removeClass("active");
+                    $("#tableSelect").removeClass("active");
+                    $("#chartSelect").addClass("active");
+                });
+            });
+            $(function () {
+                $.ajax({
+                    Method: "GET",
+                    URL: "@Url.Action("Brands","API", null, Request.Url.Scheme)"
+                })
+                    .done(function (data) {
+                        var dataObject = JSON.parse(data);
+                        alert(dataObject);
+                        if (dataObject.result === "0") {
+                            for (var item in dataObject.data) {
+                                $("#Brand").append("<option>" + item + "</option>");
+                            }
+                        } else {
+                            alert(dataObject.resultmessage);
+                        }
+                    })
+                    .fail(function (err) {
+                        // error
+                    });
+
+                $.ajax({
+                    Method: "GET",
+                    URL: "@Url.Action("States", "API")"
+                })
+                    .done(function (data) {
+                        var dataObject = JSON.parse(data);
+                        if (dataObject.result === "0") {
+                            for (var item in dataObject.data) {
+                                $("#State").append("<option>" + item + "</option>");
+                            }
+                        } else {
+                            alert(dataObject.resultmessage);
+                        }
+                    })
+                    .fail(function (err) {
+                        // error
+                    });
+            });
+            $("#State").change(function () {
+                var retrieval = $("#State").val();
+                $.ajax({
+                    Method: "GET",
+                    URL: "@Url.Action("CitiesFromState", "API")" +"?state=" + retrieval
+                })
+                    .done(function (data) {
+                        var dataObject = JSON.parse(data);
+                        if (dataObject.result === "0") {
+                            for (var item in dataObject.data) {
+                                $("#Brand").append("<option>" + item + "</option>");
+                            }
+                        } else {
+                            alert(dataObject.resultmessage);
+                        }
+                    })
+                    .fail(function (err) {
+                        // error
+                    });
+
+            });
+
+            function search() {
+                var postal = encodeURIComponent($("#ZipCode").val());
+                var brand = encodeURIComponent($("#Brand").val());
+                var state = encodeURIComponent($("#State").val());
+                var city = encodeURIComponent($("#City").val());
+                var dist = encodeURIComponent($("#Radius").val());
+                alert("/API/LatLongData?postalcode=" + postal + "&brand=" + brand +
+                    "&city=" + city + "state=" + state + "distance=" + dist);
+
+                $.ajax({
+                    Method: "GET",
+                    URL: "@Url.Action("LatLngData", "API")" + "?postalcode=" + postal + "&brand=" + brand +
+                    "&city=" + city + "state=" + state + "distance=" + dist
+                })
+                    .done(function (data) {
+                        var dataObject = JSON.parse(data);
+                        if (dataObject.result === "0") {
+
+                        } else {
+                            alert(dataObject.resultmessage);
+                        }
+                    })
+                    .fail(function (err) {
+                        // error
+                    });
+
+            }
+
+            $(function () {
+                $(".date-picker").datepicker({
+                    changeMonth: true,
+                    changeYear: true
+                });
+            });
+            /*
+            ID's to auto set:
+            #Brand
+            #State
+            #City
+            
+             q
+            */
         });
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+
 }
 
 <div class="row">
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
-                <form class="navbar-form" method="GET">
                     <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip..." type="text" value="">
 
                     <label for="Brand" class="">Select Brand</label>
@@ -68,8 +198,7 @@
                         
                     </div>
                     
-                    <button type="submit" class="btn btn-default" style="margin-top: 10px;">Search</button>
-                </form>
+                    <button onclick="search()" class="btn btn-default" style="margin-top: 10px;">Search</button>
             </li>
         </ul>
     </div>

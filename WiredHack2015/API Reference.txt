@@ -24,6 +24,9 @@ Response:
 		{
 			"Lat":"37.12439",
 			"Lng":"-78.29483"
+         "Address1":"Info"
+         "Brand":"NameOfBrand"
+         "DealerName":"NameOfDealer"
 		}
 	]
 }

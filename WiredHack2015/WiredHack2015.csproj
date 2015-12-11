@@ -314,6 +314,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\MapScriptMain.js" />
     <Content Include="Scripts\MapScript\heatmapTest.js" />
     <Content Include="Scripts\IndexScripts.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
