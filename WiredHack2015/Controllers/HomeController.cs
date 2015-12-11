@@ -58,34 +58,28 @@ namespace WiredHack2015.Controllers
             if (String.IsNullOrEmpty(viewModel.ZipCode)) { 
             if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {
-                    try {
-                        WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
-                            + viewModel.ZipCode + ",&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
-                        WebResponse response = (WebResponse)request.GetResponse();
+                    WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
+                        + viewModel.ZipCode + ",&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
+                    WebResponse response = (WebResponse)request.GetResponse();
 
-                        //WebHeaderCollection header = response.Headers;
+                    //WebHeaderCollection header = response.Headers;
 
-                        XElement ele = XElement.Load(response.GetResponseStream());
-                        lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
-                        lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
+                    XElement ele = XElement.Load(response.GetResponseStream());
+                    lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
+                    lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
 
-                        db.PostalCodeLatLongs.Add(new PostalCodeLatLong()
-                        {
-                            Lat = lat,
-                            Long = lng,
-                            PostalCode = viewModel.ZipCode
-                        });
-
-                        db.SaveChanges();
-                    }
-                    catch(Exception e)
+                    db.PostalCodeLatLongs.Add(new PostalCodeLatLong()
                     {
+                        Lat = lat,
+                        Lng = lng,
+                        PostalCode = viewModel.ZipCode
+                    });
 
-                    }
+                    db.SaveChanges();
             }
             else {
                 lat = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Lat.ToString());
-                lng = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Long.ToString());
+                lng = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Lng.ToString());
             }
             viewModel.LatLongSearch = "var Templat = \"" + lat + "\";\nvar Templong = \"" + lng + "\";\nvar Zoomin = 10;";
                             
@@ -104,7 +98,7 @@ namespace WiredHack2015.Controllers
                         State = item.State,
                         PostalCode = item.PostalCode,
                         Lat = item.Lat,
-                        Long = item.Long,
+                        Lng = item.Lng,
                         id = item.id
                     });
                 }
@@ -194,7 +188,7 @@ namespace WiredHack2015.Controllers
 
             foreach (var item in HeatmapDataList)
             {
-                heatmapScript += "new google.maps.LatLng(" + item.Lat + "," + item.Long + ")";
+                heatmapScript += "new google.maps.LatLng(" + item.Lat + "," + item.Lng + ")";
 
                 if (item != HeatmapDataList.Last())
                 {
@@ -231,7 +225,7 @@ namespace WiredHack2015.Controllers
 
             foreach (var item in MarkerDataList)
             {
-                MarkerScript += "['"+item.DealerName.Replace("'","")+"',"+item.Lat+","+item.Long+"]";            
+                MarkerScript += "['"+item.DealerName.Replace("'","")+"',"+item.Lat+","+item.Lng+"]";            
 
                 if (item != MarkerDataList.Last())
                 {

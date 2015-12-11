@@ -1,0 +1,56 @@
+﻿
+Command:    /API/LatLngData
+Parameters: postalcode -- The postal code to search for
+            brand -- The brand to search for
+            city -- The city to filter by
+            state -- The state to filter by
+            datebefore -- Filter by date <= datebefore
+            dateafter -- Filter by date >= dateafter
+            distance -- Filter by distance in miles
+
+Example:
+	/API/LatLongData?postalcode=29715&brand=GM&city=Fort%20Mill&state=SC&distance=120
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	"data": [
+		{
+			"Lat":"37.12439",
+			"Lng":"-80.34893"
+		},
+		{
+			"Lat":"37.12439",
+			"Lng":"-78.29483"
+		}
+	]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containing the latitude and longitude data requested
+
+==============
+
+Command:   /API/Brands
+Paramters: (None)
+
+Example:
+	/API/Brands
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	data: ["Ford", "GM", "Mopar", "Toyota"]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containing the available brands
+
+==============
+

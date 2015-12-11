@@ -12,7 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PostalCode" Type="nvarchar" MaxLength="9" Nullable="false" />
           <Property Name="Lat" Type="float" Nullable="false" />
-          <Property Name="Long" Type="float" Nullable="false" />
+          <Property Name="Lng" Type="float" Nullable="false" />
           <Property Name="CacheDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="stgDealer">
@@ -87,8 +87,8 @@
           <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="State" Type="String" MaxLength="2" FixedLength="true" Unicode="true" />
           <Property Name="PostalCode" Type="String" MaxLength="9" FixedLength="false" Unicode="true" />
-          <Property Name="Lat" Type="Double" />
-          <Property Name="Long" Type="Double" />
+          <Property Name="Lat" Type="Single" />
+          <Property Name="Lng" Type="Single" />
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <ComplexType Name="GetMissingRecordsLatAndLong_Result">
@@ -124,8 +124,8 @@
           <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="State" Nullable="true" MaxLength="2" />
           <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="9" />
-          <Property Type="Double" Name="Lat" Nullable="true" />
-          <Property Type="Double" Name="Long" Nullable="true" />
+          <Property Type="Single" Name="Lat" Nullable="true" />
+          <Property Type="Single" Name="Lng" Nullable="true" />
           <Property Type="Int32" Name="id" Nullable="false" />
         </ComplexType>
         <EntityType Name="PostalCodeLatLong">
@@ -134,9 +134,9 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PostalCode" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="true" />
-          <Property Name="Lat" Type="Double" Nullable="false" />
-          <Property Name="Long" Type="Double" Nullable="false" />
+          <Property Name="Lat" Type="Single" Nullable="false" />
           <Property Name="CacheDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Lng" Type="Single" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -148,7 +148,7 @@
             <EntityTypeMapping TypeName="WiredHackModel.stgDealer">
               <MappingFragment StoreEntitySet="stgDealer">
                 <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lng" ColumnName="Long" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
                 <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
                 <ScalarProperty Name="State" ColumnName="State" />
@@ -197,8 +197,8 @@
           <EntitySetMapping Name="PostalCodeLatLongs">
             <EntityTypeMapping TypeName="WiredHackModel.PostalCodeLatLong">
               <MappingFragment StoreEntitySet="PostalCodeLatLong">
+                <ScalarProperty Name="Lng" ColumnName="Lng" />
                 <ScalarProperty Name="CacheDate" ColumnName="CacheDate" />
-                <ScalarProperty Name="Long" ColumnName="Long" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
                 <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
