@@ -114,9 +114,9 @@ namespace WiredHack2015.Controllers
             if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {
                     var response = GetLatLongResponse(viewModel.ZipCode);
-
+                    
                     if(response.Status == "OK")
-                        {
+                    {
                         lat = response.lat;
                         lng = response.lng;
                     }
@@ -127,7 +127,7 @@ namespace WiredHack2015.Controllers
             }
             else {
                 lat = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Lat.ToString());
-                lng = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Long.ToString());
+                lng = float.Parse(db.PostalCodeLatLongs.FirstOrDefault(o => o.PostalCode == viewModel.ZipCode).Lng.ToString());
             }
             viewModel.LatLongSearch = "var Templat = \"" + lat + "\";\nvar Templong = \"" + lng + "\";\nvar Zoomin = 10;";
                             
@@ -146,7 +146,7 @@ namespace WiredHack2015.Controllers
                         State = item.State,
                         PostalCode = item.PostalCode,
                         Lat = item.Lat,
-                        Long = item.Long,
+                        Lng = item.Lng,
                         id = item.id
                     });
                 }
@@ -195,7 +195,7 @@ namespace WiredHack2015.Controllers
 
             return View(viewModel);
         }
-
+        
         
 
         public ActionResult Upload()
@@ -238,7 +238,7 @@ namespace WiredHack2015.Controllers
 
             foreach (var item in HeatmapDataList)
             {
-                heatmapScript += "new google.maps.LatLng(" + item.Lat + "," + item.Long + ")";
+                heatmapScript += "new google.maps.LatLng(" + item.Lat + "," + item.Lng + ")";
 
                 if (item != HeatmapDataList.Last())
                 {
@@ -275,7 +275,7 @@ namespace WiredHack2015.Controllers
 
             foreach (var item in MarkerDataList)
             {
-                MarkerScript += "['"+item.DealerName.Replace("'","")+"',"+item.Lat+","+item.Long+"]";            
+                MarkerScript += "['"+item.DealerName.Replace("'","")+"',"+item.Lat+","+item.Lng+"]";            
 
                 if (item != MarkerDataList.Last())
                 {

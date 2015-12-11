@@ -159,3 +159,12 @@ $(function () {
     });
     $("#Radius").val($("#slider").slider("value"));
 });
+
+/*
+ID's to auto set:
+#Brand
+#State
+#City
+
+
+*/

@@ -1,0 +1,114 @@
+﻿
+Method:     GET
+Command:    /API/LatLngData
+Parameters: postalcode -- The postal code to search for
+            brand -- The brand to search for
+            city -- The city to filter by
+            state -- The state to filter by
+            datebefore -- Filter by date <= datebefore
+            dateafter -- Filter by date >= dateafter
+            distance -- Filter by distance in miles
+
+Example:
+	/API/LatLongData?postalcode=29715&brand=GM&city=Fort%20Mill&state=SC&distance=120
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	"data": [
+		{
+			"Lat":"37.12439",
+			"Lng":"-80.34893"
+		},
+		{
+			"Lat":"37.12439",
+			"Lng":"-78.29483"
+		}
+	]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containing the latitude and longitude data requested
+
+==============
+
+Method:     GET
+Command:    /API/Brands
+Parameters: (None)
+
+Example:
+	/API/Brands
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	data: ["Ford","GM","Mopar","Toyota"]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containing the available brands
+
+==============
+
+Method:     GET
+Command:    /API/States
+Parameters: (None)
+
+Example:
+	/API/States
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	"data":["AZ","AR","CA","MD","NC","SC"]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containing the available states
+
+==============
+
+Method:     GET
+Command:    /API/CitiesFromState
+Parameters: state -- The state from which to filter cities
+
+Example:
+	/API/CitiesFromState?state=SC
+
+Response:
+{
+	"result":"0",
+	"resultmessage":"OK",
+	"data": ["Fort Mill","Rock Hill"]
+}
+
+Response Explanation:
+	result -- The result code of the operation
+	resultmessage -- A string message corresponding to the result code
+	data -- An array containg the cities found in the given state
+
+Notes:
+	If the state parameter is left out or blank, all cities in the database are returned.
+
+==============
+
+Result codes and messages
+Code	Variable						Message
+----    --------                        -------
+0		RESULT_OK						"OK"
+1		RESULT_ZERO_RESULTS				"No results found"
+2		RESULT_OVER_QUERY_LIMIT			"Maximum query allocation exceeded"
+3		RESULT_REQUEST_DENIED			"Query request was denied"
+4		RESULT_INVALID_REQUEST			"Query request was invalid"
+5		RESULT_UNKNOWN_ERROR			"An unknown error occured"
+6		RESULT_DATABASE_UNAVAILABLE		"The database server could not be reached"
+7		RESULT_INVALID_PARAMETERS		"The supplied parameters were invalid"
