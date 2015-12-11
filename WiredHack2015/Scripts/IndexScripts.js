@@ -1,5 +1,5 @@
 ﻿var map, pointarray, heatmap;
-function initialize() {
+/*function initialize() {
     var bounds = new google.maps.LatLngBounds();
     var mapOptions;
     if (Templat != "" & Templong != "") {
@@ -80,7 +80,7 @@ function initialize() {
         data: pointArray
     });
     heatmap.setMap(map);
-}
+}*/
 
 function changeGradient() {
     var gradient = [
@@ -111,7 +111,7 @@ function toggleHeatmap() {
     
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+//google.maps.event.addDomListener(window, 'load', initialize);
 
 $(document).ready(function () {
     $("#mapSelect").click(function () {
@@ -154,8 +154,8 @@ $(function () {
         max: 700,
         step: 10,
         slide: function (event, ui) {
-            $("#sliderAmount").val(ui.value);
+            $("#Radius").val(ui.value);
         }
     });
-    $("#sliderAmount").val($("#slider").slider("value"));
+    $("#Radius").val($("#slider").slider("value"));
 });

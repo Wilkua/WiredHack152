@@ -87,3 +87,7 @@ html, body, .body-content, .main, #map-canvas {
 .row-container {
     height: Calc(100% - inherit);
 }
+
+.form-margin {
+    margin-top: 5px;
+}

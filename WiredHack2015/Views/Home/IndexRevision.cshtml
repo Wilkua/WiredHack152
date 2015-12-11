@@ -3,6 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section styles{
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     @Styles.Render("~/Content/DashboardCss")
 }
 @section scripts{
@@ -14,7 +15,20 @@
                 changeMonth: true,
                 changeYear: true
             });
-        })
+        });
+        $(function () {
+            $("#slider").slider({
+                range: "min",
+                value: 50,
+                min: 10,
+                max: 700,
+                step: 10,
+                slide: function (event, ui) {
+                    $("#Radius").val(ui.value);
+                }
+            });
+            $("#Radius").val($("#slider").slider("value"));
+        });
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
@@ -24,7 +38,37 @@
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
-                <!--Sidebar information-->
+                <form class="navbar-form" method="GET">
+                    <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip..." type="text" value="">
+
+                    <label for="Brand" class="">Select Brand</label>
+                    <select class="form-control" id="Brand" name="Brand"></select>
+
+                    <label for="City">Select City</label>
+                    <select class="form-control" id="City" name="City"></select>
+
+                    <label for="State">Select State</label>
+                    <select class="form-control" id="State" name="State"></select>
+
+                    <input class="date-picker form-control hasDatepicker form-margin" data-val="true" data-val-date="The field DateBefore must be a date." data-val-required="The DateBefore field is required." id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
+                    <input class="date-picker form-control hasDatepicker form-margin" id="DateAfter" name="DateBefore" placeholder="Date Before" type="text" value="">
+
+                    <label for="Radius">Select Radius</label>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input class="form-control" id="Radius" disabled="disabled"/>
+                        </div>
+                        <div class="col-md-9">
+                            <div id="slider" class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                <div class="ui-slider-range ui-widget-header ui-corner-all ui-slider-range-min" style="width: 5.7971%;"></div>
+                                <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0" style="left: 5.7971%;"></span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <button type="submit" class="btn btn-default" style="margin-top: 10px;">Search</button>
+                </form>
             </li>
         </ul>
     </div>

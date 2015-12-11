@@ -23,12 +23,12 @@
     </script>
 
 <script type='text/javascript'>
-        $(function() {
+    $(function() {
         $('.date-picker').datepicker({
             changeMonth: true,
             changeYear: true
         });
-    })
+    });
 </script>
 
     <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -130,10 +130,10 @@
                 max: 700,
                 step: 10,
                 slide: function (event, ui) {
-                    $("#sliderAmount").val(ui.value);
+                    $("#Radius").val(ui.value);
                 }
             });
-            $("#sliderAmount").val($("#slider").slider("value"));
+            $("#Radius").val($("#slider").slider("value"));
         });
     </script>
 }
@@ -158,21 +158,20 @@
                         @Html.TextBox("DateBefore", string.Empty, new { @class = "date-picker form-control", placeholder = "Date Before" })
                     }
                     else
-                    { 
+                    {
                         @Html.TextBox("DateBefore", null, new {@class = "date-picker form-control", placeholder = "Date Before"})
                     }
                     if (Model.DateAfter == System.DateTime.MinValue)
                     { 
-                        @Html.TextBox("DateBefore", string.Empty, new {@class = "date-picker form-control", placeholder = "Date Before"})
+                        @Html.TextBox("DateAfter", string.Empty, new {@class = "date-picker form-control", placeholder = "Date Before"})
                     }
                     else
                     {
                         @Html.TextBox("DateAfter", null, new { @class = "date-picker form-control", placeholder = "Date After" })
                     }
-
         <br/>
-        <label for="sliderAmount" class="form-control">Mile Radius:</label>
-                    <p><input type="text" id="sliderAmount" name="Radius" readonly/>  Miles</p>
+        <label for="Radius" class="form-control">Mile Radius:</label>
+                    <p><input type="text" id="Radius" name="Radius" readonly/>  Miles</p>
         <div id="slider"></div>
         <button type="submit" class="btn btn-default" style="margin-top: 10px;">Search</button>
         }
@@ -241,10 +240,9 @@
             @foreach (var item in Model.DealersList)
             {
                 <tr>
-                @*<td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.BrandName)
                     </td>
-                   *@
                     <td>
                         @Html.DisplayFor(modelItem => item.DealerName)
                     </td>
