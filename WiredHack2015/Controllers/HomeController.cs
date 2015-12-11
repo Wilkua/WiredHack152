@@ -15,6 +15,56 @@ namespace WiredHack2015.Controllers
     {
         private WiredHackEntities db = new WiredHackEntities();
 
+        public GeoCodeLatLongResponse GetLatLongResponse(string address)
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
+                    + address + ",&key=AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4");
+                WebResponse response = (WebResponse)request.GetResponse();
+
+                //WebHeaderCollection header = response.Headers;
+
+                XElement ele = XElement.Load(response.GetResponseStream());
+                var status = ele.Element("status").Value;
+
+                switch (status)
+                {
+                    case "OK":
+                        return new GeoCodeLatLongResponse()
+                        {
+                            lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value),
+                            lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value),
+                            Status = status
+                        };
+                    case "UNKNOWN_ERROR":
+                        var latlong = GetLatLongResponse(address);
+                        if (latlong.Status == "OK")
+                        {
+
+                            return new GeoCodeLatLongResponse()
+                            {
+                                lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value),
+                                lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value),
+                                Status = status
+                            };
+                        }
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return new GeoCodeLatLongResponse()
+            {
+                lat = 0,
+                lng = 0,
+                Status = "Error"
+            };
+        }
+
         public ActionResult Index()
         {
 #if false
@@ -58,34 +108,21 @@ namespace WiredHack2015.Controllers
 
             IEnumerable<stgDealer> list = db.stgDealers;
             List<stgDealer> transList = new List<stgDealer>();
-            float lat= 0;
+            float lat = 0;
             float lng = 0;
-            if (String.IsNullOrEmpty(viewModel.ZipCode)) { 
+            if (!String.IsNullOrEmpty(viewModel.ZipCode)) { 
             if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {
-                    try {
-                        WebRequest request = WebRequest.Create("https://maps.googleapis.com/maps/api/geocode/xml?address="
-                            + viewModel.ZipCode + ",&key=AIzaSyAHHCY6JtRuBrmAh_KDOA4npMi1GgR4rGo");
-                        WebResponse response = (WebResponse)request.GetResponse();
+                    var response = GetLatLongResponse(viewModel.ZipCode);
 
-                        //WebHeaderCollection header = response.Headers;
-
-                        XElement ele = XElement.Load(response.GetResponseStream());
-                        lat = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lat").Value);
-                        lng = float.Parse(ele.Element("result").Element("geometry").Element("location").Element("lng").Value);
-
-                        db.PostalCodeLatLongs.Add(new PostalCodeLatLong()
+                    if(response.Status == "OK")
                         {
-                            Lat = lat,
-                            Long = lng,
-                            PostalCode = viewModel.ZipCode
-                        });
-
-                        db.SaveChanges();
+                        lat = response.lat;
+                        lng = response.lng;
                     }
-                    catch(Exception e)
+                    else
                     {
-
+                        //add alert
                     }
             }
             else {
@@ -158,6 +195,8 @@ namespace WiredHack2015.Controllers
 
             return View(viewModel);
         }
+
+        
 
         public ActionResult Upload()
         {
