@@ -314,5 +314,11 @@ namespace WiredHack2015.Controllers
 
             return new JavaScriptSerializer().Serialize(output);
         }
+
+        public string abcdefg()
+        {
+
+            return "";
+        }
     } // end class APIController
 } // end namespace
