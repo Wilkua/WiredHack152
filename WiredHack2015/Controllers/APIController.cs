@@ -501,7 +501,7 @@ namespace WiredHack2015.Controllers
                         .Count();
 
                     newSeries.data.Add(dealerCount);
-                }
+        }
 
                 chartSeries.Add(newSeries);
             }

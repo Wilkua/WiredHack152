@@ -116,7 +116,7 @@ namespace WiredHack2015.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "BrandName,DealerName,SignedOn,DealerCode,ManfRegionCode,Address1,Address2,City,State,PostalCode,Lat,Long,id")] stgDealer stgDealer)
+        public ActionResult Edit([Bind(Include = "BrandName,DealerName,SignedOn,DealerCode,ManfRegionCode,Address1,Address2,City,State,PostalCode,Lat,Lng,id")] stgDealer stgDealer)
         {
             if (ModelState.IsValid)
             {

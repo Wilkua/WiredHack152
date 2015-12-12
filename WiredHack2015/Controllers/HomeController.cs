@@ -67,6 +67,12 @@ namespace WiredHack2015.Controllers
 
         public ActionResult Index()
         {
+            return View();
+        }
+
+        public ActionResult IndexOld()
+        {
+
 #if false
             double lat = 34.9037259;
             double lng = -81.0092062;
@@ -109,9 +115,9 @@ namespace WiredHack2015.Controllers
             if (!db.PostalCodeLatLongs.Any(o => o.PostalCode == viewModel.ZipCode))
             {
                     var response = GetLatLongResponse(viewModel.ZipCode);
-
+                    
                     if(response.Status == "OK")
-                        {
+                    {
                         lat = response.lat;
                         lng = response.lng;
                     }
@@ -190,7 +196,7 @@ namespace WiredHack2015.Controllers
 
             return View(viewModel);
         }
-
+        
         
 
         public ActionResult Upload()

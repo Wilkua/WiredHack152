@@ -6,19 +6,19 @@
 }
 @section styles
 {
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 }
 @section scripts
 {
-   <script type='text/javascript'>
-       $(function() {
+    <script type='text/javascript'>
+        $(function() {
             $('.date-picker').datepicker({
                 changeMonth: true,
                 changeYear: true
             });
-       })
-   </script>
+        })
+    </script>
 }
 
 <h2>Index</h2>
@@ -29,9 +29,9 @@
         <td>
             @{
                 WiredHackEntities db = new WiredHackEntities();
-                SelectList Brandlist = new SelectList(db.tblBrands.Select(o=>o.BrandName).ToList());
-                SelectList CityList = new SelectList(db.tblCities.Select(o => o.City).ToList());
-                SelectList StateList = new SelectList(db.tblStates.Select(o => o.State).ToList());
+                SelectList Brandlist = new SelectList(db.stgDealers.Select(o=>o.BrandName).ToList());
+                SelectList CityList = new SelectList(db.stgDealers.Select(o => o.City).ToList());
+                SelectList StateList = new SelectList(db.stgDealers.Select(o => o.State).ToList());
             }
             @Html.DropDownList("Brand", Brandlist, String.Empty)
         </td>
@@ -67,7 +67,7 @@
             @Html.DisplayNameFor(model => model.Lat)
         </td>
         <td>
-            @Html.DisplayNameFor(model => model.Long)
+            @Html.DisplayNameFor(model => model.Lng)
         </td>
     </tr>
     </table>
@@ -109,7 +109,7 @@
                 @Html.DisplayNameFor(model => model.Lat)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Long)
+                @Html.DisplayNameFor(model => model.Lng)
             </th>
             <th></th>
         </tr>
@@ -151,7 +151,7 @@
                     @Html.DisplayFor(modelItem => item.Lat)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Long)
+                    @Html.DisplayFor(modelItem => item.Lng)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new {id = item.id}) |
