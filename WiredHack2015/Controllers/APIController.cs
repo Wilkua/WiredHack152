@@ -63,9 +63,9 @@ namespace WiredHack2015.Controllers
                 
                 //WebHeaderCollection header = response.Headers;
 
-                response.Close(); // Close 
-
                 XElement geoData = XElement.Load(response.GetResponseStream());
+
+                response.Close(); // Close 
 
                 string status = geoData.Element("status").Value.ToLower();
 
@@ -144,8 +144,29 @@ namespace WiredHack2015.Controllers
                 float postLng = 0.0f;
 
                 result = GetLatLngForPostalCode(postalcode, out postLat, out postLng);
-                //dealers = dbContext.sp_getDealersByLatLong(postLat, postLng, distance);
-                dealerList = dbContext.stgDealers.ToList();
+                var spDealers = dbContext.sp_getDealersByLatLong(distance, postLat, postLng).ToList();
+
+                dealerList = new List<stgDealer>();
+
+                foreach (var dealer in spDealers)
+                {
+                    dealerList.Add(new stgDealer()
+                    {
+                        Address1 = dealer.Address1,
+                        Address2 = dealer.Address2,
+                        BrandName = dealer.BrandName,
+                        City = dealer.City,
+                        DealerCode = dealer.DealerCode,
+                        DealerName = dealer.DealerName,
+                        id = dealer.id,
+                        Lat = dealer.Lat,
+                        Lng = dealer.Lng,
+                        ManfRegionCode = dealer.ManfRegionCode,
+                        PostalCode = dealer.PostalCode,
+                        SignedOn = dealer.SignedOn,
+                        State = dealer.State
+                    });
+                }
             }
             else
             {
@@ -201,9 +222,12 @@ namespace WiredHack2015.Controllers
                 Lng = s.Lng
             });
 
+            if (dealerList.Count == 0)
+                result = RESULT_ZERO_RESULTS;
+
             var output = new
             {
-                result = (dealerList.Count == 0) ? RESULT_ZERO_RESULTS : result,
+                result = result,
                 resultmessage = ResultStrings[result],
                 data = finalList
             };
