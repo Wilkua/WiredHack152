@@ -178,7 +178,7 @@ namespace WiredHack2015.Controllers
                 dealerList = dealerList.Where(s => s.SignedOn >= dtDateAfter).ToList();
             }
 
-            var finalList = dealerList.Select(s => new { s.Lat, s.Lng }).ToList();
+            var finalList = dealerList.Select(s => new { s.Lat, s.Lng, s.DealerName, s.BrandName, s.Address1 }).ToList();
 
             var output = new
             {

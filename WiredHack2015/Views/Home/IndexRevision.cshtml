@@ -3,191 +3,241 @@
     ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     @Styles.Render("~/Content/DashboardCss")
 }
-@section scripts{
+@section scripts {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
-    @Scripts.Render("~/Scripts/MainScripts")
-    <script type="text/javascript">
+    <script>
+        function DebugPrint(value) {
+            console.log(value);
+        }
+
         $(function () {
-            $("#slider").slider({
-                range: "min",
+            $('#slider').slider({
+                range: 'min',
                 value: 50,
                 min: 10,
                 max: 700,
                 step: 10,
                 slide: function (event, ui) {
-                    $("#Radius").val(ui.value);
+                    $('#Radius').val(ui.value);
                 }
             });
-            $("#Radius").val($("#slider").slider("value"));
 
-            $(document).ready(function () {
-                $("#mapSelect").click(function () {
-                    $("#mapDiv").slideDown(600);
-                    $("#tableDiv").slideUp(600);
-                    $("#chartDiv").slideUp(600);
+            $('#Radius').val($('#slider').slider('value'));
 
-                    $("#mapSelect").addClass("active");
-                    $("#tableSelect").removeClass("active");
-                    $("#chartSelect").removeClass("active");
+            $("#mapSelect").click(function () {
+                $("#mapDiv").slideDown(600);
+                $("#tableDiv").slideUp(600);
+                $("#chartDiv").slideUp(600);
 
-                });
-
-                $("#tableSelect").click(function () {
-                    $("#mapDiv").slideUp(600);
-                    $("#tableDiv").slideDown(600);
-                    $("#chartDiv").slideUp(600);
-
-                    $("#mapSelect").removeClass("active");
-                    $("#tableSelect").addClass("active");
-                    $("#chartSelect").removeClass("active");
-                });
-
-                $("#chartSelect").click(function () {
-                    $("#mapDiv").slideUp(600);
-                    $("#tableDiv").slideUp(600);
-                    $("#chartDiv").slideDown(600);
-
-                    $("#mapSelect").removeClass("active");
-                    $("#tableSelect").removeClass("active");
-                    $("#chartSelect").addClass("active");
-                });
-            });
-            $(function () {
-                $.ajax({
-                    Method: "GET",
-                    URL: "@Url.Action("Brands","API", null, Request.Url.Scheme)"
-                })
-                    .done(function (data) {
-                        var dataObject = JSON.parse(data);
-                        alert(dataObject);
-                        if (dataObject.result === "0") {
-                            for (var item in dataObject.data) {
-                                $("#Brand").append("<option>" + item + "</option>");
-                            }
-                        } else {
-                            alert(dataObject.resultmessage);
-                        }
-                    })
-                    .fail(function (err) {
-                        // error
-                    });
-
-                $.ajax({
-                    Method: "GET",
-                    URL: "@Url.Action("States", "API")"
-                })
-                    .done(function (data) {
-                        var dataObject = JSON.parse(data);
-                        if (dataObject.result === "0") {
-                            for (var item in dataObject.data) {
-                                $("#State").append("<option>" + item + "</option>");
-                            }
-                        } else {
-                            alert(dataObject.resultmessage);
-                        }
-                    })
-                    .fail(function (err) {
-                        // error
-                    });
-            });
-            $("#State").change(function () {
-                var retrieval = $("#State").val();
-                $.ajax({
-                    Method: "GET",
-                    URL: "@Url.Action("CitiesFromState", "API")" +"?state=" + retrieval
-                })
-                    .done(function (data) {
-                        var dataObject = JSON.parse(data);
-                        if (dataObject.result === "0") {
-                            for (var item in dataObject.data) {
-                                $("#Brand").append("<option>" + item + "</option>");
-                            }
-                        } else {
-                            alert(dataObject.resultmessage);
-                        }
-                    })
-                    .fail(function (err) {
-                        // error
-                    });
-
+                $("#mapSelect").addClass("active");
+                $("#tableSelect").removeClass("active");
+                $("#chartSelect").removeClass("active");
             });
 
-            function search() {
-                var postal = encodeURIComponent($("#ZipCode").val());
-                var brand = encodeURIComponent($("#Brand").val());
-                var state = encodeURIComponent($("#State").val());
-                var city = encodeURIComponent($("#City").val());
-                var dist = encodeURIComponent($("#Radius").val());
-                alert("/API/LatLongData?postalcode=" + postal + "&brand=" + brand +
-                    "&city=" + city + "state=" + state + "distance=" + dist);
+            $("#tableSelect").click(function () {
+                $("#mapDiv").slideUp(600);
+                $("#tableDiv").slideDown(600);
+                $("#chartDiv").slideUp(600);
+
+                $("#mapSelect").removeClass("active");
+                $("#tableSelect").addClass("active");
+                $("#chartSelect").removeClass("active");
+            });
+
+            $("#chartSelect").click(function () {
+                $("#mapDiv").slideUp(600);
+                $("#tableDiv").slideUp(600);
+                $("#chartDiv").slideDown(600);
+
+                $("#mapSelect").removeClass("active");
+                $("#tableSelect").removeClass("active");
+                $("#chartSelect").addClass("active");
+            });
+
+            // Load initial brand list
+            $.ajax({
+                method: 'GET',
+                url: '/API/Brands'
+            })
+            .done(function (resStr) {
+                var jsonData = JSON.parse(resStr);
+                if (jsonData['result'] == '0') {
+                    $('#Brand').html('<option value="All">All</option>');
+                    var data = jsonData['data'];
+                    for (var idx in data) {
+                        $('#Brand').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                    }
+                }
+                else {
+                    alert(jsonData['resultmessage']);
+                }
+            })
+            .fail(function (err) {
+                // error
+            });
+
+            // Load initial state list
+            $.ajax({
+                method: 'GET',
+                url: '/API/States'
+            })
+            .done(function (resStr) {
+                var jsonData = JSON.parse(resStr);
+                if (jsonData['result'] == '0') {
+                    $('#State').html('<option value="All">All</option>')
+                    var data = jsonData['data'];
+                    for (var idx in data) {
+                        $('#State').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                    }
+                }
+                else {
+                    alert(dataObject.resultmessage);
+                }
+            })
+            .fail(function (err) {
+                // error
+            });
+
+            // Load initial city list
+            $.ajax({
+                method: 'GET',
+                url: '/Api/CitiesFromState'
+            })
+            .done(function (resStr) {
+                var jsonData = JSON.parse(resStr);
+                if (jsonData['result'] == '0') {
+                    $('#City').html('<option value="All">All</option>');
+                    var data = jsonData['data'];
+                    for (var idx in data) {
+                        $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                    }
+                }
+                else {
+                    alert(jsonData['resultmessage']);
+                }
+            })
+            .fail(function (err) {
+                // error
+            });
+
+            // Load cities when the state selector changes
+            $('#State').change(function () {
+                var stateVal = encodeURIComponent($('#State').val());
+                var restURL = '/API/CitiesFromState';
+                
+                if (stateVal != 'All') {
+                    restURL += '?state=' + stateVal;
+                }
 
                 $.ajax({
-                    Method: "GET",
-                    URL: "@Url.Action("LatLngData", "API")" + "?postalcode=" + postal + "&brand=" + brand +
-                    "&city=" + city + "state=" + state + "distance=" + dist
+                    method: 'GET',
+                    url: restURL
                 })
-                    .done(function (data) {
-                        var dataObject = JSON.parse(data);
-                        if (dataObject.result === "0") {
-
-                        } else {
-                            alert(dataObject.resultmessage);
+                .done(function (resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#City').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
                         }
-                    })
-                    .fail(function (err) {
-                        // error
-                    });
+                    }
+                    else {
+                        alert(jsonData['resultmessage']);
+                    }
+                })
+                .fail(function (err) {
+                    // error
+                });
+            }); // end $('#State').change
 
+            $(".date-picker").datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+        }); // end $(function () {})
+
+        function search() {
+            var postal = encodeURIComponent($('#ZipCode').val());
+            var brand = encodeURIComponent($('#Brand').val());
+            var state = encodeURIComponent($('#State').val());
+            var city = encodeURIComponent($('#City').val());
+            var dist = encodeURIComponent($('#Radius').val());
+            var restURL = '/API/LatLngData';
+
+            if (postal != '')
+                restURL += '?postalcode=' + postal;
+
+            if (brand != 'All') {
+                restURL += (restURL.length > 15) ? '&brand=' : '?brand=';
+                restURL += brand;
             }
 
-            $(function () {
-                $(".date-picker").datepicker({
-                    changeMonth: true,
-                    changeYear: true
-                });
+            if (state != 'All') {
+                restURL += (restURL.length > 15) ? '&state=' : '?state=';
+                restURL += state;
+            }
+
+            if (city != 'All') {
+                restURL += (restURL.length > 15) ? '&city=' : '?city=';
+                restURL += city;
+            }
+
+            if (postal != '') {
+                restURL += (restURL.length > 15) ? '&distance=' : '?distance=';
+                restURL += dist;
+            }
+
+            DebugPrint('Searching ' + restURL);
+
+            $.ajax({
+                method: 'GET',
+                url: restURL
+            })
+            .done(function (resStr) {
+                var jsonData = JSON.parse(resStr);
+                if (jsonData['result'] == '0') {
+
+                } else {
+                    alert(jsonData['resultmessage']);
+                }
+            })
+            .fail(function (err) {
+                // error
             });
-            /*
-            ID's to auto set:
-            #Brand
-            #State
-            #City
-            
-             q
-            */
-        });
+        } // end search
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
-
 }
 
 <div class="row">
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
-                    <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip..." type="text" value="">
+                    <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip" type="text" value="">
 
-                    <label for="Brand" class="">Select Brand</label>
+                    <label for="Brand" class="">Brand</label>
                     <select class="form-control" id="Brand" name="Brand"></select>
 
-                    <label for="State">Select State</label>
+                    <label for="State">State</label>
                     <select class="form-control" id="State" name="State"></select>
 
-                    <label for="City">Select City</label>
+                    <label for="City">City</label>
                     <select class="form-control" id="City" name="City"></select>
 
 
                     <input class="date-picker form-control hasDatepicker form-margin" data-val="true" data-val-date="The field DateBefore must be a date." data-val-required="The DateBefore field is required." id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
                     <input class="date-picker form-control hasDatepicker form-margin" id="DateAfter" name="DateBefore" placeholder="Date Before" type="text" value="">
 
-                    <label for="Radius">Select Radius</label>
+                    <label for="Radius">Search Radius</label>
                     <div class="row">
                         <div class="col-md-3">
-                            <input class="form-control" id="Radius" disabled="disabled"/>
+                            <input class="form-control" id="Radius" disabled="disabled" />
                         </div>
                         <div class="col-md-9">
                             <div id="slider" class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
@@ -218,7 +268,7 @@
                 <button onclick="changeGradient()" class="btn btn-primary">Change gradient</button>
                 <button onclick="changeRadius()" class="btn btn-primary">Change radius</button>
             </div>
-            <div id="map-canvas">l</div>
+            <div id="map-canvas">&nbsp;</div>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
             <!--Table Information-->
@@ -226,11 +276,11 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main full-row" id="chartDiv" style="display: none;">
             <div class="row" id="pieCharts" style="height: 50%;">
                 <!--Chart Information-->
-                <div class="col-md-6" id="byBrandPie">l</div>
-                <div class="col-md-6" id="byYearPie">l</div>
+                <div class="col-md-6" id="byBrandPie">&nbsp;</div>
+                <div class="col-md-6" id="byYearPie">&nbsp;</div>
             </div>
             <div class="row" id="lineChart" style="height: 50%;">
-                <div class="col-md-12" id="overTime">l</div>
+                <div class="col-md-12" id="overTime">&nbsp;</div>
             </div>
         </div>
     </div>
