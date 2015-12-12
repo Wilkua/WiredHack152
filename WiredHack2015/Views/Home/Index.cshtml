@@ -9,12 +9,13 @@
 @section scripts {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
     <script>
-        var mapData = [];
+        var recievedData = [];
         var map, heatmap;
         var mapMarkers = [];
         var mapLatLngs = [];
         var mapInfoContents = [];
         var bounds;
+
 
         function DebugPrint(value) {
             console.log(value);
@@ -40,9 +41,21 @@
                 $("#tableDiv").slideUp(600);
                 $("#chartDiv").slideUp(600);
 
+                var mapNotActive = false;
+                if(!$("#mapSelect").hasClass("active")) {
+                    mapNotActive = true;
+                }
+
                 $("#mapSelect").addClass("active");
                 $("#tableSelect").removeClass("active");
                 $("#chartSelect").removeClass("active");
+
+                setTimeout(function () {
+
+                    if (mapNotActive)
+                        initMap();
+
+                }, 500);
             });
 
             $("#tableSelect").click(function() {
@@ -169,11 +182,13 @@
                 }).done(function(data) {
                     var jsonData = JSON.parse(data);
                     if (jsonData['result'] == '0') {
-                        mapData = jsonData['data'];
+                        recievedData = jsonData['data'];
                         initMap();
+                        setTable();
                     } else {
                         alert(jsonData['resultmessage']);
                         initMap();
+                        setTable();
                     }
                 })
                 .fail(function(err) {
@@ -237,14 +252,15 @@
                     if (jsonData['result'] == '0') {
                         mapMarkers = null;
                         mapLatLngs = null;
-                        mapData = null;
+                        recievedData = null;
                         mapInfoContents = null;
-                        mapData = jsonData['data'];
+                        recievedData = jsonData['data'];
                         mapMarkers = [];
                         mapLatLngs = [];
                         mapInfoContents = [];
                         heatmap.setMap(null);
-                        setMapPoints();
+                        setTable();
+                        initMap();
                     } else {
                         alert("Query returned no data with status " + jsonData['resultmessage']);
                     }
@@ -269,17 +285,17 @@
         }
 
         function setMapPoints() {
-            for (var idx in mapData) {
+            for (var idx in recievedData) {
                 var mapInfo = "<div class='info_content'>" +
-                    "<p><b>Dealer:</b> " + mapData[idx].DealerName + "</p>" +
-                    "<p><b>Brand:</b> " + mapData[idx].BrandName + "</p>" +
+                    "<p><b>Dealer:</b> " + recievedData[idx].DealerName + "</p>" +
+                    "<p><b>Brand:</b> " + recievedData[idx].BrandName + "</p>" +
                     "<p><b>Address:</b></p>" +
-                    "<p>" + mapData[idx].Address1 + ", " + mapData[idx].City +
-                    ", " + mapData[idx].State + ", " + mapData[idx].PostalCode + "</p>";
+                    "<p>" + recievedData[idx].Address1 + ", " + recievedData[idx].City +
+                    ", " + recievedData[idx].State + ", " + recievedData[idx].PostalCode + "</p>";
                 var infoContent = new google.maps.InfoWindow({
                     content: mapInfo
                 });
-                var latLng = new google.maps.LatLng(mapData[idx].Lat, mapData[idx].Lng);
+                var latLng = new google.maps.LatLng(recievedData[idx].Lat, recievedData[idx].Lng);
                 var marker = new google.maps.Marker({
                     position: latLng,
                     map: map
@@ -347,6 +363,44 @@
 
         function changeRadius() {
             heatmap.set("radius", heatmap.get("radius") ? null : 40);
+        }
+
+        function setTable() {
+            $('#tableDiv').html("");
+            var tableString = "<table class='table'>" +
+                "<tr>" +
+                    "<th>Brand Name</th>" +
+                    "<th>Dealer Name</th>" +
+                    "<th>Signed On</th>" +
+                    "<th>Dealer Code</th>" +
+                    "<th>Manf Region Code</th>" +
+                    "<th>Address 1</th>" +
+                    "<th>Address 2</th>" +
+                    "<th>City</th>" +
+                    "<th>State</th>" +
+                    "<th>Postal Code</th>" +
+                    "<th>Latitude</th>" +
+                    "<th>Longitude</th>" +
+                "</tr>";
+            for (var idx in recievedData) {
+                tableString += "<tr>" +
+                    "<td>" + recievedData[idx].BrandName + "</td>" +
+                    "<td>" + recievedData[idx].DealerName + "</td>" +
+                    "<td>" + recievedData[idx].SignedOn + "</td>" +
+                    "<td>" + recievedData[idx].DealerCode + "</td>" +
+                    "<td>" + recievedData[idx].ManfRegionCode + "</td>" +
+                    "<td>" + recievedData[idx].Address1 + "</td>" +
+                    "<td>" + recievedData[idx].Address2 + "</td>" +
+                    "<td>" + recievedData[idx].City + "</td>"+ 
+                    "<td>" + recievedData[idx].State + "</td>" +
+                    "<td>" + recievedData[idx].PostalCode + "</td>" +
+                    "<td>" + recievedData[idx].Lat + "</td>" +
+                    "<td>" + recievedData[idx].Lng + "</td>"+
+                    "</tr>";
+            }
+            tableString += "</table>";
+            $('#tableDiv').html(tableString);
+
         }
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>

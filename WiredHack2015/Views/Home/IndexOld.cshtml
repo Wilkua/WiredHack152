@@ -199,45 +199,44 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
             
           <table class="table">
-            <tr>
-            @*<th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().BrandName)
-                </th>
-               *@
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().SignedOn)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().ManfRegionCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address1)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address2)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().City)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().State)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().PostalCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lat)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lng)
-                </th>
-            </tr>
+              <tr>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().BrandName)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerName)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().SignedOn)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerCode)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().ManfRegionCode)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address1)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address2)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().City)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().State)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().PostalCode)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lat)
+                  </th>
+                  <th>
+                      @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lng)
+                  </th>
+              </tr>
 
             @foreach (var item in Model.DealersList)
             {
