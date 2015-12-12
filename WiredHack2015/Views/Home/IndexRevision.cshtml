@@ -10,16 +10,18 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
     <script>
         var mapData = [];
-        var map;
+        var map, heatmap;
         var mapMarkers = [];
         var mapLatLngs = [];
         var mapInfoContents = [];
+        var bounds;
 
         function DebugPrint(value) {
             console.log(value);
         }
 
-        $(function() {
+        $(function () {
+            
             $('#slider').slider({
                 range: 'min',
                 value: 50,
@@ -67,8 +69,8 @@
             $.ajax({
                     method: 'GET',
                     url: '/API/Brands'
-                })
-                .done(function(resStr) {
+            })
+                .done(function (resStr) {
                     var jsonData = JSON.parse(resStr);
                     if (jsonData['result'] == '0') {
                         $('#Brand').html('<option value="All">All</option>');
@@ -178,7 +180,7 @@
                     initMap();
                 });
 
-            
+            bounds = new google.maps.LatLngBounds();
         }); // end $(function () {})
 
         function search() {
@@ -186,6 +188,8 @@
             var brand = encodeURIComponent($('#Brand').val());
             var state = encodeURIComponent($('#State').val());
             var city = encodeURIComponent($('#City').val());
+            var dateBefore = encodeURIComponent($('#DateBefore').val());
+            var dateAfter = encodeURIComponent($('#DateAfter').val());
             var dist = encodeURIComponent($('#Radius').val());
             var restUrl = '/API/LatLngData';
 
@@ -207,13 +211,23 @@
                 restUrl += city;
             }
 
-            if (postal != '') {
-                restUrl += (restUrl.length > 15) ? '&distance=' : '?distance=';
-                restUrl += dist;
+            if (dateBefore != '') {
+                restUrl += (restUrl.length > 15) ? '&dateAfter=' : '?dateAfter=';
+                restUrl += dateBefore;
             }
 
-            DebugPrint('Searching ' + restUrl);
+            if (dateAfter != '') {
+                restUrl += (restUrl.length > 15) ? '&dateAfter=' : '?dateAfter=';
+                restUrl += dateBefore;
+            }
+            //TODO: Reminder that the distance is disabled until Will can fix it!
+            /*if (postal != '') {
+                restUrl += (restUrl.length > 15) ? '&distance=' : '?distance=';
+                restUrl += dist;
+            }*/
 
+            DebugPrint('Searching ' + restUrl);
+            clearAllMarkers();
             $.ajax({
                     method: 'GET',
                     url: restUrl
@@ -221,9 +235,18 @@
                 .done(function(resStr) {
                     var jsonData = JSON.parse(resStr);
                     if (jsonData['result'] == '0') {
-
+                        mapMarkers = null;
+                        mapLatLngs = null;
+                        mapData = null;
+                        mapInfoContents = null;
+                        mapData = jsonData['data'];
+                        mapMarkers = [];
+                        mapLatLngs = [];
+                        mapInfoContents = [];
+                        heatmap.setMap(null);
+                        setMapPoints();
                     } else {
-                        alert(jsonData['resultmessage']);
+                        alert("Query returned no data with status " + jsonData['resultmessage']);
                     }
                 })
                 .fail(function(err) {
@@ -233,7 +256,7 @@
 
 
         function initMap() {
-            var bounds = new google.maps.LatLngBounds();
+            
             var mapOptions =
             {
                 zoom: 4,
@@ -242,10 +265,14 @@
             };
 
             map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+            setMapPoints();
+        }
+
+        function setMapPoints() {
             for (var idx in mapData) {
                 var mapInfo = "<div class='info_content'>" +
                     "<p><b>Dealer:</b> " + mapData[idx].DealerName + "</p>" +
-                    "<p><b>Brand:</b> " + mapData[idx].Brand + "</p>" +
+                    "<p><b>Brand:</b> " + mapData[idx].BrandName + "</p>" +
                     "<p><b>Address:</b></p>" +
                     "<p>" + mapData[idx].Address1 + ", " + mapData[idx].City +
                     ", " + mapData[idx].State + ", " + mapData[idx].PostalCode + "</p>";
@@ -270,6 +297,9 @@
                 });
             }
             map.fitBounds(bounds);
+            heatmap = new google.maps.visualization.HeatmapLayer({
+                data: mapLatLngs
+            });
         }
 
         function setMapOnAll(map) {
@@ -284,6 +314,40 @@
         function showAllMarkers() {
             setMapOnAll(map);
         }
+
+        function toggleHeatmap() {
+            if (heatmap.getMap()) {
+                heatmap.setMap(null);
+                showAllMarkers();
+            } else {
+                heatmap.setMap(map);
+                clearAllMarkers();
+            }
+        }
+
+        function changeGradient() {
+            var gradient = [
+                "rgba(0, 255, 255, 0)",
+                "rgba(0, 255, 255, 1)",
+                "rgba(0, 191, 255, 1)",
+                "rgba(0, 127, 255, 1)",
+                "rgba(0, 63, 255, 1)",
+                "rgba(0, 0, 255, 1)",
+                "rgba(0, 0, 223, 1)",
+                "rgba(0, 0, 191, 1)",
+                "rgba(0, 0, 159, 1)",
+                "rgba(0, 0, 127, 1)",
+                "rgba(63, 0, 91, 1)",
+                "rgba(127, 0, 63, 1)",
+                "rgba(191, 0, 31, 1)",
+                "rgba(255, 0, 0, 1)"
+            ];
+            heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+        }
+
+        function changeRadius() {
+            heatmap.set("radius", heatmap.get("radius") ? null : 40);
+        }
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
@@ -293,7 +357,7 @@
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
-                <div class="form-control">
+                <div style="margin-left: 15px; margin-right: 15px;">
                     <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip" type="text" value="">
 
                     <label for="Brand" class="">Brand</label>
@@ -306,8 +370,8 @@
                     <select class="form-control" id="City" name="City"></select>
 
 
-                    <input class="date-picker form-control hasDatepicker form-margin" id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
-                    <input class="date-picker form-control hasDatepicker form-margin" id="DateAfter" name="DateBefore" placeholder="Date After" type="text" value="">
+                    <input class="date-picker form-control form-margin" id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
+                    <input class="date-picker form-control form-margin" id="DateAfter" name="DateBefore" placeholder="Date After" type="text" value="">
 
                     <label for="Radius">Search Radius</label>
                     <div class="row">
@@ -338,7 +402,7 @@
             <button class="btn btn-primary navigator-btn" id="chartSelect">Charts</button>
         </div>
     </div>
-    <div class="row full-row">
+    <div class="row " style="height: 100%;">
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mapDiv" style="display: block;">
             <div id="panel">
                 <!--Overlay-->
