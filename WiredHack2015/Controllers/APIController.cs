@@ -35,6 +35,13 @@ namespace WiredHack2015.Controllers
         private WiredHackEntities dbContext = new WiredHackEntities();
         private string gaKey = "AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4";
 
+#if false
+        public ActionResult Test()
+        {
+            return View();
+        }
+#endif
+
         private int GetLatLngForPostalCode(string postalcode, out float postLat, out float postLng)
         {
             int result = RESULT_UNKNOWN_ERROR;
@@ -360,8 +367,6 @@ namespace WiredHack2015.Controllers
             {
                 chart = new
                 {
-                    height = 400,
-                    width = 400,
                     type = "pie"
                 },
                 title = new
@@ -441,8 +446,6 @@ namespace WiredHack2015.Controllers
             {
                 chart = new
                 {
-                    height = 400,
-                    width = 400,
                     type = "pie"
                 },
                 title = new
@@ -477,6 +480,62 @@ namespace WiredHack2015.Controllers
 
             return new JavaScriptSerializer().Serialize(chartOutput);
         }
+
+        public string DealerGrowthByBrandOverTimeChart()
+        {
+            List<ChartSeriesData<int>> chartSeries = new List<ChartSeriesData<int>>();
+
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+            var years = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
+
+            foreach (var brand in brands)
+            {
+                var newSeries = new ChartSeriesData<int>();
+                newSeries.name = brand;
+
+                foreach (var year in years)
+                {
+                    var dealerCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    newSeries.data.Add(dealerCount);
+                }
+
+                chartSeries.Add(newSeries);
+            }
+
+            var chartOutput = new
+            {
+                title = new
+                {
+                    text = "Dealer Growth By Brand Over Time"
+                },
+                subtitle = new
+                {
+                    text = ""
+                },
+                xAxis = new
+                {
+                    categories = years
+                },
+                yAxis = new {
+                    title = new {
+                        text = "Dealerships Signed"
+                    },
+                },
+                legend = new {
+                    layout =  "vertical",
+                    align = "right",
+                    verticalAlign = "middle",
+                    borderWidth = 0
+                },
+                series = chartSeries
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
+        }
     } // end class APIController
 
     public class ChartSeries<Tx>
@@ -495,7 +554,13 @@ namespace WiredHack2015.Controllers
     {
         public string name { get; set; }
         public Tx y { get; set; }
+        public List<Tx> data { get; set; }
         public string drilldown { get; set; }
+
+        public ChartSeriesData()
+        {
+            data = new List<Tx>();
+        }
     }
 
     public class DrillDownSeriesItem<Tx>
@@ -512,209 +577,71 @@ namespace WiredHack2015.Controllers
 
 /*
 {
-                chart: {
-                    height: 400,
-                    width: 400,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Dealer Growth by Year'
-                },
-                xAxis: {
-                    type: 'category'
-                },
-
-                legend: {
-                    enabled: false
-                },
-
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true
-                        }
-                    }
-                },
-
-                series: [{
-name: 'Dealers',
-colorByPoint: true,
-data: [
-{
-name: '2008',
-y: 58,
-drilldown: '2008Brands'
-},
-{
-name: '2006',
-y: 57,
-drilldown: '2006Brands'
-},
-{
-name: '2007',
-y: 123,
-drilldown: '2007Brands'
-},
-{
-name: '2013',
-y: 59,
-drilldown: '2013Brands'
-},
-{
-name: '2009',
-y: 25,
-drilldown: '2009Brands'
-},
-{
-name: '2004',
-y: 15,
-drilldown: '2004Brands'
-},
-{
-name: '2014',
-y: 9,
-drilldown: '2014Brands'
-},
-{
-name: '2010',
-y: 9,
-drilldown: '2010Brands'
-},
-{
-name: '2005',
-y: 34,
-drilldown: '2005Brands'
-},
-{
-name: '2011',
-y: 2,
-drilldown: '2011Brands'
-}
-]
-}],
-drilldown: {
-series: [
-{id: '2008Brands',
-data: [
-['Toyota', 26]
-,
-['GM', 25]
-,
-['Mopar', 7]
-,
-['Ford', 0]
-]
-}
-,
-{id: '2006Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 50]
-,
-['Mopar', 4]
-,
-['Ford', 3]
-]
-}
-,
-{id: '2007Brands',
-data: [
-['Toyota', 14]
-,
-['GM', 99]
-,
-['Mopar', 8]
-,
-['Ford', 2]
-]
-}
-,
-{id: '2013Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 1]
-,
-['Mopar', 57]
-,
-['Ford', 1]
-]
-}
-,
-{id: '2009Brands',
-data: [
-['Toyota', 12]
-,
-['GM', 6]
-,
-['Mopar', 0]
-,
-['Ford', 7]
-]
-}
-,
-{id: '2004Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 15]
-,
-['Mopar', 0]
-,
-['Ford', 0]
-]
-}
-,
-{id: '2014Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 0]
-,
-['Mopar', 9]
-,
-['Ford', 0]
-]
-}
-,
-{id: '2010Brands',
-data: [
-['Toyota', 3]
-,
-['GM', 1]
-,
-['Mopar', 1]
-,
-['Ford', 4]
-]
-}
-,
-{id: '2005Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 34]
-,
-['Mopar', 0]
-,
-['Ford', 0]
-]
-}
-,
-{id: '2011Brands',
-data: [
-['Toyota', 0]
-,
-['GM', 0]
-,
-['Mopar', 2]
-,
-['Ford', 0]
-]
-}
-
-]
+    title: {
+        text: 'Dealer Growth By Brand Over Time',
+        x: -20 //center
+    },
+    subtitle: {
+        text: '',
+        x: -20
+    },
+    xAxis: {
+        categories: [
+            '2008',
+            '2006',
+            '2007',
+            '2013',
+            '2009',
+            '2004',
+            '2014',
+            '2010',
+            '2005',
+            '2011'
+        ]
+    },
+    yAxis: {
+        title: {
+            text: 'Dealerships Signed'
+        },
+        plotLines: [
+            {
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }
+        ]
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        borderWidth: 0
+    },
+    series: [
+        {
+            name: 'Toyota',
+            data: [
+                26,
+                12,
+                14,
+                3
+            ]
+        },
+        {
+            name: 'GM',
+            data: [
+                50,
+                99,
+                25,
+                15,
+                34,
+                6,
+                1,
+                1
+            ]
+        },
+        {
+            name: 'Mopar',
+            data: [57,8,7,9,4,2,1]},{name: 'Ford',data: [7,2,4,3,1]}]
 }
 */

@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "Test";
+}
+
+<div id="highchart"></div>
+
+@section scripts {
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+
+    <script>
+        $.ajax({
+            method: 'GET',
+            url: '/API/DealerGrowthByBrandOverTimeChart'
+        })
+        .done(function (resStr) {
+            $('#highchart').highcharts(JSON.parse(resStr));
+        });
+    </script>
+}

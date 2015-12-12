@@ -327,6 +327,7 @@
     <Content Include="Views\stgDealers\Details.cshtml" />
     <Content Include="Views\stgDealers\Edit.cshtml" />
     <Content Include="Views\stgDealers\Index.cshtml" />
+    <Content Include="Views\API\Test.cshtml" />
     <None Include="Web References\sitedata\SiteData.disco" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -370,7 +371,6 @@
     <Folder Include="Content\dealer_files\failed\" />
     <Folder Include="Content\dealer_files\processed\" />
     <Folder Include="Content\dealer_files\uploads\" />
-    <Folder Include="Views\API\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
