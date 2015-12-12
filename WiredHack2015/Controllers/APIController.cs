@@ -315,10 +315,208 @@ namespace WiredHack2015.Controllers
             return new JavaScriptSerializer().Serialize(output);
         }
 
-        public string abcdefg()
+        public string DealerCountByBrandChart()
         {
+            List<ChartSeries<ChartSeriesData<int>>> seriesList = new List<ChartSeries<ChartSeriesData<int>>>();
+            List<DrillDownSeries<dynamic []>> drillDownList = new List<DrillDownSeries<dynamic[]>>();
 
-            return "";
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+
+            /*
+            {
+                name: 'Dealers',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: 'Toyota',
+                        y: 55,
+                        drilldown: 'ToyotaYears'
+                    },
+                    {
+                        name: 'GM',
+                        y: 231,
+                        drilldown: 'GMYears'
+                    },
+                    {
+                        name: 'Mopar',
+                        y: 88,
+                        drilldown: 'MoparYears'
+                    },
+                    {
+                        name: 'Ford',
+                        y: 17,
+                        drilldown: 'FordYears'
+                    }
+                ]
+            }
+            */
+
+            var newSeries = new ChartSeries<ChartSeriesData<int>>();
+            newSeries.name = "Dealers";
+            newSeries.colorByPoint = true;
+
+            foreach (var brand in brands)
+            {
+                
+                int dealerCount = dbContext.stgDealers.Where(s => s.BrandName == brand).Count();
+                newSeries.data.Add(new ChartSeriesData<int>
+                {
+                    name = brand,
+                    y = dealerCount,
+                    drilldown = brand + "Years"
+                });
+            }
+
+            return new JavaScriptSerializer().Serialize(newSeries);
         }
     } // end class APIController
+
+    public class ChartSeries<Tx>
+    {
+        public string name { get; set; }
+        public bool colorByPoint { get; set; }
+        public List<Tx> data { get; set; }
+
+        public ChartSeries()
+        {
+            data = new List<Tx>();
+        }
+    }
+
+    public class ChartSeriesData<Tx>
+    {
+        public string name { get; set; }
+        public Tx y { get; set; }
+        public string drilldown { get; set; }
+    }
+
+    public class DrillDownSeries<Tx>
+    {
+        public string id { get; set; }
+        public List<Tx> data { get; set; }
+
+        public DrillDownSeries()
+        {
+            data = new List<Tx>();
+        }
+    }
 } // end namespace
+
+/*
+$('#byBrandPie').highcharts({
+                chart: {
+                    height: 400,
+                    width: 400,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Dealer Count by Brand'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Dealers',
+                    colorByPoint: true,
+                    data: [
+                        {
+                            name: 'Toyota',
+                            y: 55,
+                            drilldown: 'ToyotaYears'
+                        },
+                        {
+                            name: 'GM',
+                            y: 231,
+                            drilldown: 'GMYears'
+                        },
+                        {
+                            name: 'Mopar',
+                            y: 88,
+                            drilldown: 'MoparYears'
+                        },
+                        {
+                            name: 'Ford',
+                            y: 17,
+                            drilldown: 'FordYears'
+                        }
+                    ]
+                }],
+                drilldown: {
+                    series: [
+                        {
+                            id: 'ToyotaYears',
+                            data: [
+                                ['2008', 26],
+                                ['2006', 0],
+                                ['2007', 14],
+                                ['2013', 0],
+                                ['2009', 12],
+                                ['2004', 0],
+                                ['2014', 0],
+                                ['2010', 3],
+                                ['2005', 0],
+                                ['2011', 0]
+                            ]
+                        },
+                        {
+                            id: 'GMYears',
+                            data: [
+                                ['2008', 25],
+                                ['2006', 50],
+                                ['2007', 99],
+                                ['2013', 1],
+                                ['2009', 6],
+                                ['2004', 15],
+                                ['2014', 0],
+                                ['2010', 1],
+                                ['2005', 34],
+                                ['2011', 0]
+                            ]
+                        },
+                        {
+                            id: 'MoparYears',
+                            data: [
+                                ['2008', 7],
+                                ['2006', 4],
+                                ['2007', 8],
+                                ['2013', 57],
+                                ['2009', 0],
+                                ['2004', 0],
+                                ['2014', 9],
+                                ['2010', 1],
+                                ['2005', 0],
+                                ['2011', 2]
+                            ]
+                        },
+                        {
+                            id: 'FordYears',
+                            data: [
+                                ['2008', 0],
+                                ['2006', 3],
+                                ['2007', 2],
+                                ['2013', 1],
+                                ['2009', 7],
+                                ['2004', 0],
+                                ['2014', 0],
+                                ['2010', 4],
+                                ['2005', 0],
+                                ['2011', 0]
+                            ]
+                        }
+                    ]
+                }
+            });
+        });
+*/
