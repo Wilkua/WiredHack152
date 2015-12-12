@@ -13,6 +13,7 @@
         var map;
         var mapMarkers = [];
         var mapLatLngs = [];
+        var mapInfoContents = [];
 
         function DebugPrint(value) {
             console.log(value);
@@ -256,10 +257,17 @@
                     position: latLng,
                     map: map
                 });
-                marker.addListener('click', function() {
-                    infoContent.open(map, marker);
-                });
+                mapLatLngs.push(latLng);
+                mapMarkers.push(marker);
+                mapInfoContents.push(infoContent);
                 bounds.extend(latLng);
+            }
+            for (var i = 0; i < mapMarkers.length; i++) {
+                var newMarker = mapMarkers[i];
+                var newInfo = mapInfoContents[i];
+                google.maps.event.addListener(newMarker, 'click', function () {
+                    newInfo.open(map, this);
+                });
             }
             map.fitBounds(bounds);
         }
