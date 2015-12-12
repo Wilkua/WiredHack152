@@ -330,7 +330,7 @@
     <Content Include="Views\stgDealers\Details.cshtml" />
     <Content Include="Views\stgDealers\Edit.cshtml" />
     <Content Include="Views\stgDealers\Index.cshtml" />
-    <Content Include="Views\Home\IndexRevision.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web References\sitedata\SiteData.disco" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -345,7 +345,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\IndexOld.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />

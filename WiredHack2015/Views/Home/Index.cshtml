@@ -1,304 +1,430 @@
-﻿@model WiredHack2015.Models.MapViewModel
-
-@{
+﻿@{
     ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-@section styles{
-
+@section styles {
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-
     @Styles.Render("~/Content/DashboardCss")
 }
-@section scripts{
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization&callback=initMap"></script>
-    
-    @Scripts.Render("~/Scripts/MapScripts")
-    @Scripts.Render("~/Scripts/MainScripts")
-
-    <script type="text/javascript">
-        google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
-
-    <script type="text/javascript">
-        var obj = 3;
-    </script>
-
-<script type='text/javascript'>
-    $(function() {
-        $('.date-picker').datepicker({
-            changeMonth: true,
-            changeYear: true
-        });
-    });
-</script>
-
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+@section scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
     <script>
-        $(function () {
+        var mapData = [];
+        var map, heatmap;
+        var mapMarkers = [];
+        var mapLatLngs = [];
+        var mapInfoContents = [];
+        var bounds;
 
-            // Create the chart
-            $('#byBrandPie').highcharts({
-                chart: {
-                    height: 400,
-                    width: 400,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Dealer Count by Brand'
-                },
-                xAxis: {
-                    type: 'category'
-                },
-
-                legend: {
-                    enabled: false
-                },
-
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true
-                        }
-                    }
-                },
-                @Html.Raw(Model.BrandYearPieChartJSON)
-            });
-        });
+        function DebugPrint(value) {
+            console.log(value);
+        }
 
         $(function () {
-
-            // Create the chart
-            $('#byYearPie').highcharts({
-                chart: {
-                    height: 400,
-                    width: 400,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Dealer Growth by Year'
-                },
-                xAxis: {
-                    type: 'category'
-                },
-
-                legend: {
-                    enabled: false
-                },
-
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true
-                        }
-                    }
-                },
-
-                @Html.Raw(Model.YearPieChartJSON)
-            });
-        });
-
-        $(function () {
-            $('#overTime').highcharts({
-                title: {
-                    text: 'Dealer Growth By Brand Over Time',
-                    x: -20 //center
-                },
-                subtitle: {
-                    text: '',
-                    x: -20
-                },
-                @Html.Raw(Model.BrandYearLineChartJSON)
-            });
-        });
-    </script>
-
-    <script type="text/javascript">
-        @Html.Raw(Model.HeatmapScript)
-        @Html.Raw(Model.MarkerMapJSON)
-        @Html.Raw(Model.LatLongSearch)
-    </script>
-    <script type="text/javascript">
-        
-
-        $(function () {
-            $("#slider").slider({
-                range: "min",
+            
+            $('#slider').slider({
+                range: 'min',
                 value: 50,
                 min: 10,
                 max: 700,
                 step: 10,
-                slide: function (event, ui) {
-                    $("#Radius").val(ui.value);
+                slide: function(event, ui) {
+                    $('#Radius').val(ui.value);
                 }
             });
-            $("#Radius").val($("#slider").slider("value"));
-        });
+
+            $('#Radius').val($('#slider').slider('value'));
+
+            $("#mapSelect").click(function() {
+                $("#mapDiv").slideDown(600);
+                $("#tableDiv").slideUp(600);
+                $("#chartDiv").slideUp(600);
+
+                $("#mapSelect").addClass("active");
+                $("#tableSelect").removeClass("active");
+                $("#chartSelect").removeClass("active");
+            });
+
+            $("#tableSelect").click(function() {
+                $("#mapDiv").slideUp(600);
+                $("#tableDiv").slideDown(600);
+                $("#chartDiv").slideUp(600);
+
+                $("#mapSelect").removeClass("active");
+                $("#tableSelect").addClass("active");
+                $("#chartSelect").removeClass("active");
+            });
+
+            $("#chartSelect").click(function() {
+                $("#mapDiv").slideUp(600);
+                $("#tableDiv").slideUp(600);
+                $("#chartDiv").slideDown(600);
+
+                $("#mapSelect").removeClass("active");
+                $("#tableSelect").removeClass("active");
+                $("#chartSelect").addClass("active");
+            });
+
+            // Load initial brand list
+            $.ajax({
+                    method: 'GET',
+                    url: '/API/Brands'
+            })
+                .done(function (resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#Brand').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#Brand').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                        }
+                    } else {
+                        alert(jsonData['resultmessage']);
+                    }
+                })
+                .fail(function(err) {
+                    // error
+                });
+
+            // Load initial state list
+            $.ajax({
+                    method: 'GET',
+                    url: '/API/States'
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#State').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#State').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                        }
+                    } else {
+                        alert(dataObject.resultmessage);
+                    }
+                })
+                .fail(function(err) {
+                    // error
+                });
+
+            // Load initial city list
+            $.ajax({
+                    method: 'GET',
+                    url: '/Api/CitiesFromState'
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#City').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                        }
+                    } else {
+                        alert(jsonData['resultmessage']);
+                    }
+                })
+                .fail(function(err) {
+                    // error
+                });
+
+            // Load cities when the state selector changes
+            $('#State').change(function() {
+                var stateVal = encodeURIComponent($('#State').val());
+                var restURL = '/API/CitiesFromState';
+
+                if (stateVal != 'All') {
+                    restURL += '?state=' + stateVal;
+                }
+
+                $.ajax({
+                        method: 'GET',
+                        url: restURL
+                    })
+                    .done(function(resStr) {
+                        var jsonData = JSON.parse(resStr);
+                        if (jsonData['result'] == '0') {
+                            $('#City').html('<option value="All">All</option>');
+                            var data = jsonData['data'];
+                            for (var idx in data) {
+                                $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                            }
+                        } else {
+                            alert(jsonData['resultmessage']);
+                        }
+                    })
+                    .fail(function(err) {
+                        // error
+                    });
+            }); // end $('#State').change
+
+            $(".date-picker").datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $.ajax({
+                    method: 'GET',
+                    url: '/API/LatLngData'
+                }).done(function(data) {
+                    var jsonData = JSON.parse(data);
+                    if (jsonData['result'] == '0') {
+                        mapData = jsonData['data'];
+                        initMap();
+                    } else {
+                        alert(jsonData['resultmessage']);
+                        initMap();
+                    }
+                })
+                .fail(function(err) {
+                    initMap();
+                });
+
+            bounds = new google.maps.LatLngBounds();
+        }); // end $(function () {})
+
+        function search() {
+            var postal = encodeURIComponent($('#ZipCode').val());
+            var brand = encodeURIComponent($('#Brand').val());
+            var state = encodeURIComponent($('#State').val());
+            var city = encodeURIComponent($('#City').val());
+            var dateBefore = encodeURIComponent($('#DateBefore').val());
+            var dateAfter = encodeURIComponent($('#DateAfter').val());
+            var dist = encodeURIComponent($('#Radius').val());
+            var restUrl = '/API/LatLngData';
+
+            if (postal != '')
+                restUrl += '?postalcode=' + postal;
+
+            if (brand != 'All') {
+                restUrl += (restUrl.length > 15) ? '&brand=' : '?brand=';
+                restUrl += brand;
+            }
+
+            if (state != 'All') {
+                restUrl += (restUrl.length > 15) ? '&state=' : '?state=';
+                restUrl += state;
+            }
+
+            if (city != 'All') {
+                restUrl += (restUrl.length > 15) ? '&city=' : '?city=';
+                restUrl += city;
+            }
+
+            if (dateBefore != '') {
+                restUrl += (restUrl.length > 15) ? '&dateAfter=' : '?dateAfter=';
+                restUrl += dateBefore;
+            }
+
+            if (dateAfter != '') {
+                restUrl += (restUrl.length > 15) ? '&dateAfter=' : '?dateAfter=';
+                restUrl += dateBefore;
+            }
+            //TODO: Reminder that the distance is disabled until Will can fix it!
+            /*if (postal != '') {
+                restUrl += (restUrl.length > 15) ? '&distance=' : '?distance=';
+                restUrl += dist;
+            }*/
+
+            DebugPrint('Searching ' + restUrl);
+            clearAllMarkers();
+            $.ajax({
+                    method: 'GET',
+                    url: restUrl
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        mapMarkers = null;
+                        mapLatLngs = null;
+                        mapData = null;
+                        mapInfoContents = null;
+                        mapData = jsonData['data'];
+                        mapMarkers = [];
+                        mapLatLngs = [];
+                        mapInfoContents = [];
+                        heatmap.setMap(null);
+                        setMapPoints();
+                    } else {
+                        alert("Query returned no data with status " + jsonData['resultmessage']);
+                    }
+                })
+                .fail(function(err) {
+                    // error
+                });
+        } // end search
+
+
+        function initMap() {
+            
+            var mapOptions =
+            {
+                zoom: 4,
+                center: new google.maps.LatLng(38.5000, -98.000),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+            setMapPoints();
+        }
+
+        function setMapPoints() {
+            for (var idx in mapData) {
+                var mapInfo = "<div class='info_content'>" +
+                    "<p><b>Dealer:</b> " + mapData[idx].DealerName + "</p>" +
+                    "<p><b>Brand:</b> " + mapData[idx].BrandName + "</p>" +
+                    "<p><b>Address:</b></p>" +
+                    "<p>" + mapData[idx].Address1 + ", " + mapData[idx].City +
+                    ", " + mapData[idx].State + ", " + mapData[idx].PostalCode + "</p>";
+                var infoContent = new google.maps.InfoWindow({
+                    content: mapInfo
+                });
+                var latLng = new google.maps.LatLng(mapData[idx].Lat, mapData[idx].Lng);
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                });
+                mapLatLngs.push(latLng);
+                mapMarkers.push(marker);
+                mapInfoContents.push(infoContent);
+                bounds.extend(latLng);
+            }
+            for (var i = 0; i < mapMarkers.length; i++) {
+                var newMarker = mapMarkers[i];
+                var newInfo = mapInfoContents[i];
+                google.maps.event.addListener(newMarker, 'click', function () {
+                    newInfo.open(map, this);
+                });
+            }
+            map.fitBounds(bounds);
+            heatmap = new google.maps.visualization.HeatmapLayer({
+                data: mapLatLngs
+            });
+        }
+
+        function setMapOnAll(map) {
+            for (var i = 0; i < mapMarkers.length; i++) {
+                mapMarkers[i].setMap(map);
+            }
+        }
+
+        function clearAllMarkers() {
+            setMapOnAll(null);
+        }
+        function showAllMarkers() {
+            setMapOnAll(map);
+        }
+
+        function toggleHeatmap() {
+            if (heatmap.getMap()) {
+                heatmap.setMap(null);
+                showAllMarkers();
+            } else {
+                heatmap.setMap(map);
+                clearAllMarkers();
+            }
+        }
+
+        function changeGradient() {
+            var gradient = [
+                "rgba(0, 255, 255, 0)",
+                "rgba(0, 255, 255, 1)",
+                "rgba(0, 191, 255, 1)",
+                "rgba(0, 127, 255, 1)",
+                "rgba(0, 63, 255, 1)",
+                "rgba(0, 0, 255, 1)",
+                "rgba(0, 0, 223, 1)",
+                "rgba(0, 0, 191, 1)",
+                "rgba(0, 0, 159, 1)",
+                "rgba(0, 0, 127, 1)",
+                "rgba(63, 0, 91, 1)",
+                "rgba(127, 0, 63, 1)",
+                "rgba(191, 0, 31, 1)",
+                "rgba(255, 0, 0, 1)"
+            ];
+            heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+        }
+
+        function changeRadius() {
+            heatmap.set("radius", heatmap.get("radius") ? null : 40);
+        }
     </script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
 }
 
 <div class="row full-row">
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
-                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new{@class="navbar-form"}))
-                {
-        WiredHackEntities db = new WiredHackEntities();
-        SelectList Brandlist = new SelectList(db.stgDealers.Select(o => o.BrandName).Distinct());
-        SelectList CityList = new SelectList(db.stgDealers.Select(o => o.City).Distinct());
-        SelectList StateList = new SelectList(db.stgDealers.Select(o => o.State).Distinct());
-    
-                    @Html.TextBox("ZipCode", null, new {@class = "form-control", placeholder = "Search zip..."})
-                    @Html.DropDownList("Brand", Brandlist, "Brand", new {@class = "form-control"})
-                    @Html.DropDownList("City", CityList, "City", new {@class = "form-control"})
-                    @Html.DropDownList("State", StateList, "State", new {@class = "form-control"})
-                    if (Model.DateBefore == System.DateTime.MinValue)
-                    {
-                        @Html.TextBox("DateBefore", string.Empty, new { @class = "date-picker form-control", placeholder = "Date Before" })
-                    }
-                    else
-                    {
-                        @Html.TextBox("DateBefore", null, new {@class = "date-picker form-control", placeholder = "Date Before"})
-                    }
-                    if (Model.DateAfter == System.DateTime.MinValue)
-                    { 
-                        @Html.TextBox("DateAfter", string.Empty, new {@class = "date-picker form-control", placeholder = "Date Before"})
-                    }
-                    else
-                    {
-                        @Html.TextBox("DateAfter", null, new { @class = "date-picker form-control", placeholder = "Date After" })
-                    }
-        <br/>
-        <label for="Radius" class="form-control">Mile Radius:</label>
-                    <p><input type="text" id="Radius" name="Radius" readonly/>  Miles</p>
-        <div id="slider"></div>
-        <button type="submit" class="btn btn-default" style="margin-top: 10px;">Search</button>
-        }
-</li>
-        </ul>
-        <ul class="nav nav-sidebar">
-            <li>
-                <button class="btn btn-primary active" id="mapSelect">Map</button>
-                <button class="btn btn-primary" id="tableSelect">Table</button>
-                <button class="btn btn-primary" id="chartSelect">Charts</button>
+                <div style="margin-left: 15px; margin-right: 15px;">
+                    <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip" type="text" value="">
+
+                    <label for="Brand" class="">Brand</label>
+                    <select class="form-control" id="Brand" name="Brand"></select>
+
+                    <label for="State">State</label>
+                    <select class="form-control" id="State" name="State"></select>
+
+                    <label for="City">City</label>
+                    <select class="form-control" id="City" name="City"></select>
+
+
+                    <input class="date-picker form-control form-margin" id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
+                    <input class="date-picker form-control form-margin" id="DateAfter" name="DateBefore" placeholder="Date After" type="text" value="">
+
+                    <label for="Radius">Search Radius</label>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input class="form-control" id="Radius" disabled="disabled"/>
+                        </div>
+                        <div class="col-md-9">
+                            <div id="slider" class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                <div class="ui-slider-range ui-widget-header ui-corner-all ui-slider-range-min" style="width: 5.7971%;"></div>
+                                <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0" style="left: 5.7971%;"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button onclick="search()" class="btn btn-default" style="margin-top: 10px;">Search</button>
+
+
+                </div>
             </li>
         </ul>
     </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mapDiv" style="display: block;">
-        <div id="panel">
-            <button onclick="toggleHeatmap()" class="btn btn-primary">Toggle Heatmap</button>
-            <button onclick="changeGradient()" class="btn btn-primary">Change gradient</button>
-            <button onclick="changeRadius()" class="btn btn-primary">Change radius</button>
+    <div class="navigator">
+        <!--mini-navigator-->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 text-center mini-navigator">
+            <button class="btn btn-primary navigator-btn active" id="mapSelect">Map</button>
+            <button class="btn btn-primary navigator-btn" id="tableSelect">Table</button>
+            <button class="btn btn-primary navigator-btn" id="chartSelect">Charts</button>
         </div>
-        <div id="map-canvas"></div>
     </div>
-
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
-            
-          <table class="table">
-            <tr>
-            @*<th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().BrandName)
-                </th>
-               *@
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().SignedOn)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().DealerCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().ManfRegionCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address1)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Address2)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().City)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().State)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().PostalCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lat)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DealersList.FirstOrDefault().Lng)
-                </th>
-            </tr>
-
-            @foreach (var item in Model.DealersList)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BrandName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DealerName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SignedOn)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DealerCode)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ManfRegionCode)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Address1)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Address2)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.City)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.State)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PostalCode)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Lat)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Lng)
-                    </td>
-                    
-                </tr>
-            }
-
-        </table>
-    </div>
-
-
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="chartDiv" style="display: none;">
-        <div class="row" style="height: 50%;">
-            <div class="col-md-6" id="byBrandPie">
-
+    <div class="row " style="height: 100%;">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mapDiv" style="display: block;">
+            <div id="panel">
+                <!--Overlay-->
+                <button onclick="toggleHeatmap()" class="btn btn-primary">Toggle Heatmap</button>
+                <button onclick="changeGradient()" class="btn btn-primary">Change gradient</button>
+                <button onclick="changeRadius()" class="btn btn-primary">Change radius</button>
             </div>
-            <div class="col-md-6" id="byYearPie">
-
+            <div id="map-canvas">&nbsp;</div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="tableDiv" style="display: none;">
+            <!--Table Information-->
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main full-row" id="chartDiv" style="display: none;">
+            <div class="row" id="pieCharts" style="height: 50%;">
+                <!--Chart Information-->
+                <div class="col-md-6" id="byBrandPie">&nbsp;</div>
+                <div class="col-md-6" id="byYearPie">&nbsp;</div>
+            </div>
+            <div class="row" id="lineChart" style="height: 50%;">
+                <div class="col-md-12" id="overTime">&nbsp;</div>
             </div>
         </div>
-        <div class="row" style="height: 50%;">
-            <div id="overTime">
-    
     </div>
-        </div>
-    </div>
-    </div>
+
+</div>

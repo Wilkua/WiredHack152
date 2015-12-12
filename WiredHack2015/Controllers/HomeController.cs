@@ -67,6 +67,12 @@ namespace WiredHack2015.Controllers
 
         public ActionResult Index()
         {
+            return View();
+        }
+
+        public ActionResult IndexOld()
+        {
+
 #if false
             double lat = 34.9037259;
             double lng = -81.0092062;
@@ -82,11 +88,6 @@ namespace WiredHack2015.Controllers
             viewModel.MarkerMapJSON = GetMarkerScript(db.stgDealers.ToList());
             viewModel.LatLongSearch = "var Templat = \"\";\nvar Templong = \"\";\nvar Zoomin = 3;";
             return View(viewModel);
-        }
-
-        public ActionResult IndexRevision()
-        {
-            return View();
         }
 
 
