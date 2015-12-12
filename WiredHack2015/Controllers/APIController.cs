@@ -315,6 +315,7 @@ namespace WiredHack2015.Controllers
             return new JavaScriptSerializer().Serialize(output);
         }
 
+        // GET: /API/DealerCountByBranchChart
         public string DealerCountByBrandChart()
         {
             List<ChartSeries<ChartSeriesData<int>>> chartSeries = new List<ChartSeries<ChartSeriesData<int>>>();
@@ -395,6 +396,87 @@ namespace WiredHack2015.Controllers
 
             return new JavaScriptSerializer().Serialize(chartOutput);
         }
+
+        public string DealerGrowthByYearChart()
+        {
+            List<ChartSeries<ChartSeriesData<int>>> chartSeries = new List<ChartSeries<ChartSeriesData<int>>>();
+            List<DrillDownSeriesItem<dynamic[]>> drillDownSeries = new List<DrillDownSeriesItem<dynamic[]>>();
+
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+            var years = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
+
+            var newSeries = new ChartSeries<ChartSeriesData<int>>();
+            newSeries.name = "Dealers";
+            newSeries.colorByPoint = true;
+
+            foreach (var year in years)
+            {
+                var dealerCount = dbContext.stgDealers.Where(s => s.SignedOn.Value.Year == year).Count();
+                newSeries.data.Add(new ChartSeriesData<int>
+                {
+                    name = Convert.ToString(year),
+                    y = dealerCount,
+                    drilldown = Convert.ToString(year) + "Brands"
+                });
+
+                var dditem = new DrillDownSeriesItem<dynamic[]>();
+
+                foreach (var brand in brands)
+                {
+                    int brandCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    dditem.id = Convert.ToString(year) + "Brands";
+                    dditem.data.Add(new dynamic[] { brand, brandCount });
+                }
+
+                drillDownSeries.Add(dditem);
+            }
+
+            chartSeries.Add(newSeries);
+
+            var chartOutput = new
+            {
+                chart = new
+                {
+                    height = 400,
+                    width = 400,
+                    type = "pie"
+                },
+                title = new
+                {
+                    text = "Dealer Count by Brand"
+                },
+                xAxis = new
+                {
+                    type = "category"
+                },
+                legend = new
+                {
+                    enabled = false
+                },
+                plotOptions = new
+                {
+                    series = new
+                    {
+                        borderWidth = 0,
+                        dataLabels = new
+                        {
+                            enabled = true
+                        }
+                    }
+                },
+                series = chartSeries,
+                drilldown = new
+                {
+                    series = drillDownSeries
+                }
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
+        }
     } // end class APIController
 
     public class ChartSeries<Tx>
@@ -427,3 +509,212 @@ namespace WiredHack2015.Controllers
         }
     }
 } // end namespace
+
+/*
+{
+                chart: {
+                    height: 400,
+                    width: 400,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Dealer Growth by Year'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                series: [{
+name: 'Dealers',
+colorByPoint: true,
+data: [
+{
+name: '2008',
+y: 58,
+drilldown: '2008Brands'
+},
+{
+name: '2006',
+y: 57,
+drilldown: '2006Brands'
+},
+{
+name: '2007',
+y: 123,
+drilldown: '2007Brands'
+},
+{
+name: '2013',
+y: 59,
+drilldown: '2013Brands'
+},
+{
+name: '2009',
+y: 25,
+drilldown: '2009Brands'
+},
+{
+name: '2004',
+y: 15,
+drilldown: '2004Brands'
+},
+{
+name: '2014',
+y: 9,
+drilldown: '2014Brands'
+},
+{
+name: '2010',
+y: 9,
+drilldown: '2010Brands'
+},
+{
+name: '2005',
+y: 34,
+drilldown: '2005Brands'
+},
+{
+name: '2011',
+y: 2,
+drilldown: '2011Brands'
+}
+]
+}],
+drilldown: {
+series: [
+{id: '2008Brands',
+data: [
+['Toyota', 26]
+,
+['GM', 25]
+,
+['Mopar', 7]
+,
+['Ford', 0]
+]
+}
+,
+{id: '2006Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 50]
+,
+['Mopar', 4]
+,
+['Ford', 3]
+]
+}
+,
+{id: '2007Brands',
+data: [
+['Toyota', 14]
+,
+['GM', 99]
+,
+['Mopar', 8]
+,
+['Ford', 2]
+]
+}
+,
+{id: '2013Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 1]
+,
+['Mopar', 57]
+,
+['Ford', 1]
+]
+}
+,
+{id: '2009Brands',
+data: [
+['Toyota', 12]
+,
+['GM', 6]
+,
+['Mopar', 0]
+,
+['Ford', 7]
+]
+}
+,
+{id: '2004Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 15]
+,
+['Mopar', 0]
+,
+['Ford', 0]
+]
+}
+,
+{id: '2014Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 0]
+,
+['Mopar', 9]
+,
+['Ford', 0]
+]
+}
+,
+{id: '2010Brands',
+data: [
+['Toyota', 3]
+,
+['GM', 1]
+,
+['Mopar', 1]
+,
+['Ford', 4]
+]
+}
+,
+{id: '2005Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 34]
+,
+['Mopar', 0]
+,
+['Ford', 0]
+]
+}
+,
+{id: '2011Brands',
+data: [
+['Toyota', 0]
+,
+['GM', 0]
+,
+['Mopar', 2]
+,
+['Ford', 0]
+]
+}
+
+]
+}
+*/
