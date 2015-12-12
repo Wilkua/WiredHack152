@@ -13,7 +13,6 @@
         var map, heatmap;
         var mapMarkers = [];
         var mapLatLngs = [];
-        var mapInfoContents = [];
         var bounds;
 
 
@@ -185,10 +184,12 @@
                         recievedData = jsonData['data'];
                         initMap();
                         setTable();
+                        setCharts();
                     } else {
                         alert(jsonData['resultmessage']);
                         initMap();
                         setTable();
+                        setCharts();
                     }
                 })
                 .fail(function(err) {
@@ -253,11 +254,9 @@
                         mapMarkers = null;
                         mapLatLngs = null;
                         recievedData = null;
-                        mapInfoContents = null;
                         recievedData = jsonData['data'];
                         mapMarkers = [];
                         mapLatLngs = [];
-                        mapInfoContents = [];
                         heatmap.setMap(null);
                         setTable();
                         initMap();
@@ -298,18 +297,17 @@
                 var latLng = new google.maps.LatLng(recievedData[idx].Lat, recievedData[idx].Lng);
                 var marker = new google.maps.Marker({
                     position: latLng,
-                    map: map
+                    map: map,
+                    infowindow: infoContent
                 });
                 mapLatLngs.push(latLng);
                 mapMarkers.push(marker);
-                mapInfoContents.push(infoContent);
                 bounds.extend(latLng);
             }
             for (var i = 0; i < mapMarkers.length; i++) {
                 var newMarker = mapMarkers[i];
-                var newInfo = mapInfoContents[i];
                 google.maps.event.addListener(newMarker, 'click', function () {
-                    newInfo.open(map, this);
+                    this.infowindow.open(map, this);
                 });
             }
             map.fitBounds(bounds);
@@ -401,6 +399,45 @@
             tableString += "</table>";
             $('#tableDiv').html(tableString);
 
+        }
+
+        function setCharts() {
+            //byBrand
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerCountByBrandChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#byBrandPie').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
+            //byYear
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerGrowthByYearChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#byYearPie').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
+            //overTime
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerGrowthByBrandOverTimeChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#overTime').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
         }
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
