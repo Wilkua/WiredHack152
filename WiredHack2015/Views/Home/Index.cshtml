@@ -185,10 +185,12 @@
                         recievedData = jsonData['data'];
                         initMap();
                         setTable();
+                        setCharts();
                     } else {
                         alert(jsonData['resultmessage']);
                         initMap();
                         setTable();
+                        setCharts();
                     }
                 })
                 .fail(function(err) {
@@ -401,6 +403,45 @@
             tableString += "</table>";
             $('#tableDiv').html(tableString);
 
+        }
+
+        function setCharts() {
+            //byBrand
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerCountByBrandChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#byBrandPie').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
+            //byYear
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerGrowthByYearChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#byYearPie').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
+            //overTime
+            $.ajax({
+                method: 'GET',
+                url: '/API/DealerGrowthByBrandOverTimeChart'
+            })
+            .done(function (resStr) {
+                console.log(resStr);
+                $('#overTime').highcharts(JSON.parse(resStr));
+            })
+            .fail(function (errStr) {
+
+            });
         }
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
