@@ -11,6 +11,13 @@ using WiredHack2015.Models;
 
 namespace WiredHack2015.Controllers
 {
+    public class Series
+    {
+        public string name { get; set; }
+        public float y { get; set; }
+        public string drilldown { get; set; }
+    }
+
     public class HomeController : Controller
     {
         private WiredHackEntities db = new WiredHackEntities();
@@ -288,31 +295,67 @@ namespace WiredHack2015.Controllers
 
         public string GetBrandYearPieChart(IEnumerable<stgDealer> list)
         {
-            String BrandYearPieChart = "series: [{\n" +
-                "name: 'Dealers',\n" +
-                "colorByPoint: true,\n" +
-                "data: [\n";
 
-            foreach (String i in list.Select(o => o.BrandName).Distinct())
+
+            var highchart = new
             {
-                BrandYearPieChart +=
-                    "{\n" +
-                    "name: '" + i + "',\n" +
-                    "y: " + list.Where(o => o.BrandName == i).Count() + ",\n" +
-                    "drilldown: '" + i + "Years'\n" +
-                    "}";
-
-                if (list.Select(o => o.BrandName).Distinct().Last() != i)
+                chart = new
                 {
-                    BrandYearPieChart += ",\n";
+                    height = 400,
+                    width = 400,
+                    type = "pie",
+                },
+                title = new
+                {
+                    text = "Dealer Count by Brand"
+                },
+                xAxis = new
+                {
+                    type = "category"
+                },
+                legend = new
+                {
+                    enabled = false
+                },
+                plotOptions = new
+                {
+                    series = new
+                    {
+                        borderWidth = 0,
+                        dataLabels = new
+                        {
+                            enabled = true
+                        }
+                    }
+                },
+                series = new
+                {
+                    name = "Dealers",
+                    colorByPoint = true,
+                    data = list.Select(o => o.BrandName).Distinct().Select(i=> new
+                    {
+                        name = i,
+                        y = list.Where(h => h.BrandName == i).Count(),
+                        drilldown = i + " Years"
+                    }),
+                },
+                drilldown = new
+                {
+                    series = list.Select(o => o.BrandName).Distinct().Select(i => new
+                    {
+                        id = i + " Years",
+                        data = list.Select(h => h.SignedOn.Value.Year).Distinct().Select(f => new 
+                        {
+                            f,
+                            list.Where(t => t.BrandName == i).Where(z => z.SignedOn.Value.Year = f).Count()
+                        })                            
+                    }),
                 }
-                else { BrandYearPieChart += "\n"; }
-            }
 
-            BrandYearPieChart += "]\n" +
-                "}],\n" +
-                "drilldown: {\n" +
-                "series: [\n";
+                
+            };
+        }
+                
 
             foreach (String i in list.Select(o => o.BrandName).Distinct())
             {
