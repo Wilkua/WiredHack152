@@ -55,7 +55,7 @@ html, body, .body-content, .main, #map-canvas {
   background-color: #428bca;
 }
 .full-row {
-    height: Calc(100% - 44px);
+    height: Calc(100% - 45px);
 }
 
 .main {
