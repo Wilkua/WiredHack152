@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Test";
+}
+
+<div id="highChart"></div>
+
+@section scripts {
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/drilldown.js"></script>
+
+<script>
+    $(function () {
+        $.ajax({
+            method: 'GET',
+            url: '/API/DealerCountByBrandChart'
+        })
+        .done(function (resStr) {
+            console.log(resStr);
+            $('#highChart').highcharts(JSON.parse(resStr));
+        })
+        .fail(function (errStr) {
+
+        });
+    });
+</script>
+}
