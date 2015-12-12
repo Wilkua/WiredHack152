@@ -178,11 +178,25 @@ namespace WiredHack2015.Controllers
                 dealerList = dealerList.Where(s => s.SignedOn >= dtDateAfter).ToList();
             }
 
-            var finalList = dealerList.Select(s => new { s.Lat, s.Lng, s.DealerName, s.BrandName, s.Address1 }).ToList();
+            var finalList = dealerList.Select(s => new
+            {
+                BrandName = s.BrandName,
+                DealerName = s.DealerName,
+                SignedOn = s.SignedOn.ToString(),
+                DealerCode = s.DealerCode,
+                ManfRegionCode = s.ManfRegionCode,
+                Address1 = s.Address1,
+                Address2 = s.Address2,
+                City = s.City,
+                State = s.State,
+                PostalCode = s.PostalCode,
+                Lat = s.Lat,
+                Lng = s.Lng
+            });
 
             var output = new
             {
-                result = (finalList.Count == 0) ? RESULT_ZERO_RESULTS : result,
+                result = (dealerList.Count == 0) ? RESULT_ZERO_RESULTS : result,
                 resultmessage = ResultStrings[result],
                 data = finalList
             };
@@ -300,5 +314,5 @@ namespace WiredHack2015.Controllers
 
             return new JavaScriptSerializer().Serialize(output);
         }
-    }
-}
+    } // end class APIController
+} // end namespace
