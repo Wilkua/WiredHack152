@@ -66,7 +66,7 @@
             <Parameter Name="lat" Mode="In" Type="Double" />
             <Parameter Name="lng" Mode="In" Type="Double" />
           </FunctionImport>
-          <FunctionImport Name="sp_getDealersByLatLong" IsComposable="true" ReturnType="Collection(WiredHackModel.sp_getDealersByLatLong_Result)">
+          <FunctionImport Name="sp_getDealersByLatLong" IsComposable="false" ReturnType="Collection(WiredHackModel.sp_getDealersByLatLong_Result)">
             <Parameter Name="distance" Mode="In" Type="Int32" />
             <Parameter Name="lat" Mode="In" Type="Double" />
             <Parameter Name="lng" Mode="In" Type="Double" />
@@ -124,10 +124,10 @@
           <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="State" Nullable="true" MaxLength="2" />
           <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="9" />
-          <Property Type="Single" Name="Lat" Nullable="true" />
-          <Property Type="Single" Name="Lng" Nullable="true" />
-          <Property Type="Int32" Name="id" Nullable="false" />
-        </ComplexType>
+          <Property Type="Double" Name="Lat" Nullable="true" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Double" Name="Long" Nullable="true" />
+          </ComplexType>
         <EntityType Name="PostalCodeLatLong">
           <Key>
             <PropertyRef Name="Id" />
@@ -205,6 +205,25 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_getDealersByLatLong" FunctionName="WiredHackModel.Store.sp_getDealersByLatLong">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WiredHackModel.sp_getDealersByLatLong_Result">
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="SignedOn" ColumnName="SignedOn" />
+                <ScalarProperty Name="DealerCode" ColumnName="DealerCode" />
+                <ScalarProperty Name="ManfRegionCode" ColumnName="ManfRegionCode" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           
         </EntityContainerMapping>
       </Mapping>
