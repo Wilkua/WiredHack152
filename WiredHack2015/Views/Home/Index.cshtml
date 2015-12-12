@@ -236,11 +236,11 @@
                 restUrl += (restUrl.length > 15) ? '&dateAfter=' : '?dateAfter=';
                 restUrl += dateBefore;
             }
-
-            if (postal != '') {
+            //TODO: Reminder that the distance is disabled until Will can fix it!
+            /*if (postal != '') {
                 restUrl += (restUrl.length > 15) ? '&distance=' : '?distance=';
                 restUrl += dist;
-            }
+            }*/
 
             DebugPrint('Searching ' + restUrl);
             clearAllMarkers();
