@@ -35,6 +35,13 @@ namespace WiredHack2015.Controllers
         private WiredHackEntities dbContext = new WiredHackEntities();
         private string gaKey = "AIzaSyBxucUVRrxS9TVmyuDPAx2v51KQWeufDG4";
 
+#if false
+        public ActionResult Test()
+        {
+            return View();
+        }
+#endif
+
         private int GetLatLngForPostalCode(string postalcode, out float postLat, out float postLng)
         {
             int result = RESULT_UNKNOWN_ERROR;
@@ -315,10 +322,326 @@ namespace WiredHack2015.Controllers
             return new JavaScriptSerializer().Serialize(output);
         }
 
-        public string abcdefg()
+        // GET: /API/DealerCountByBranchChart
+        public string DealerCountByBrandChart()
         {
+            List<ChartSeries<ChartSeriesData<int>>> chartSeries = new List<ChartSeries<ChartSeriesData<int>>>();
+            List<DrillDownSeriesItem<dynamic []>> drillDownSeries = new List<DrillDownSeriesItem<dynamic[]>>();
 
-            return "";
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+            var brandYears = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
+
+            var newSeries = new ChartSeries<ChartSeriesData<int>>();
+            newSeries.name = "Dealers";
+            newSeries.colorByPoint = true;
+
+            foreach (var brand in brands)
+            {
+                int dealerCount = dbContext.stgDealers.Where(s => s.BrandName == brand).Count();
+                newSeries.data.Add(new ChartSeriesData<int>
+                {
+                    name = brand,
+                    y = dealerCount,
+                    drilldown = brand + "Years"
+                });
+
+                var dditem = new DrillDownSeriesItem<dynamic[]>();
+
+                foreach (var year in brandYears)
+                {
+                    int brandYearCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    dditem.id = brand + "Years";
+                    dditem.data.Add(new dynamic[] { year.ToString(), brandYearCount });
+                }
+
+                drillDownSeries.Add(dditem);
+            }
+
+            chartSeries.Add(newSeries);
+
+            var chartOutput = new
+            {
+                chart = new
+                {
+                    type = "pie"
+                },
+                title = new
+                {
+                    text = "Dealer Count by Brand"
+                },
+                xAxis = new
+                {
+                    type = "category"
+                },
+                legend = new
+                {
+                    enabled = false
+                },
+                plotOptions = new
+                {
+                    series = new
+                    {
+                        borderWidth = 0,
+                        dataLabels = new
+                        {
+                            enabled = true
+                        }
+                    }
+                },
+                series = chartSeries,
+                drilldown = new
+                {
+                    series = drillDownSeries
+                }
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
+        }
+
+        public string DealerGrowthByYearChart()
+        {
+            List<ChartSeries<ChartSeriesData<int>>> chartSeries = new List<ChartSeries<ChartSeriesData<int>>>();
+            List<DrillDownSeriesItem<dynamic[]>> drillDownSeries = new List<DrillDownSeriesItem<dynamic[]>>();
+
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+            var years = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
+
+            var newSeries = new ChartSeries<ChartSeriesData<int>>();
+            newSeries.name = "Dealers";
+            newSeries.colorByPoint = true;
+
+            foreach (var year in years)
+            {
+                var dealerCount = dbContext.stgDealers.Where(s => s.SignedOn.Value.Year == year).Count();
+                newSeries.data.Add(new ChartSeriesData<int>
+                {
+                    name = Convert.ToString(year),
+                    y = dealerCount,
+                    drilldown = Convert.ToString(year) + "Brands"
+                });
+
+                var dditem = new DrillDownSeriesItem<dynamic[]>();
+
+                foreach (var brand in brands)
+                {
+                    int brandCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    dditem.id = Convert.ToString(year) + "Brands";
+                    dditem.data.Add(new dynamic[] { brand, brandCount });
+                }
+
+                drillDownSeries.Add(dditem);
+            }
+
+            chartSeries.Add(newSeries);
+
+            var chartOutput = new
+            {
+                chart = new
+                {
+                    type = "pie"
+                },
+                title = new
+                {
+                    text = "Dealer Count by Brand"
+                },
+                xAxis = new
+                {
+                    type = "category"
+                },
+                legend = new
+                {
+                    enabled = false
+                },
+                plotOptions = new
+                {
+                    series = new
+                    {
+                        borderWidth = 0,
+                        dataLabels = new
+                        {
+                            enabled = true
+                        }
+                    }
+                },
+                series = chartSeries,
+                drilldown = new
+                {
+                    series = drillDownSeries
+                }
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
+        }
+
+        public string DealerGrowthByBrandOverTimeChart()
+        {
+            List<ChartSeriesData<int>> chartSeries = new List<ChartSeriesData<int>>();
+
+            var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
+            var years = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
+
+            foreach (var brand in brands)
+            {
+                var newSeries = new ChartSeriesData<int>();
+                newSeries.name = brand;
+
+                foreach (var year in years)
+                {
+                    var dealerCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    newSeries.data.Add(dealerCount);
+                }
+
+                chartSeries.Add(newSeries);
+            }
+
+            var chartOutput = new
+            {
+                title = new
+                {
+                    text = "Dealer Growth By Brand Over Time"
+                },
+                subtitle = new
+                {
+                    text = ""
+                },
+                xAxis = new
+                {
+                    categories = years
+                },
+                yAxis = new {
+                    title = new {
+                        text = "Dealerships Signed"
+                    },
+                },
+                legend = new {
+                    layout =  "vertical",
+                    align = "right",
+                    verticalAlign = "middle",
+                    borderWidth = 0
+                },
+                series = chartSeries
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
         }
     } // end class APIController
+
+    public class ChartSeries<Tx>
+    {
+        public string name { get; set; }
+        public bool colorByPoint { get; set; }
+        public List<Tx> data { get; set; }
+
+        public ChartSeries()
+        {
+            data = new List<Tx>();
+        }
+    }
+
+    public class ChartSeriesData<Tx>
+    {
+        public string name { get; set; }
+        public Tx y { get; set; }
+        public List<Tx> data { get; set; }
+        public string drilldown { get; set; }
+
+        public ChartSeriesData()
+        {
+            data = new List<Tx>();
+        }
+    }
+
+    public class DrillDownSeriesItem<Tx>
+    {
+        public string id { get; set; }
+        public List<Tx> data { get; set; }
+
+        public DrillDownSeriesItem()
+        {
+            data = new List<Tx>();
+        }
+    }
 } // end namespace
+
+/*
+{
+    title: {
+        text: 'Dealer Growth By Brand Over Time',
+        x: -20 //center
+    },
+    subtitle: {
+        text: '',
+        x: -20
+    },
+    xAxis: {
+        categories: [
+            '2008',
+            '2006',
+            '2007',
+            '2013',
+            '2009',
+            '2004',
+            '2014',
+            '2010',
+            '2005',
+            '2011'
+        ]
+    },
+    yAxis: {
+        title: {
+            text: 'Dealerships Signed'
+        },
+        plotLines: [
+            {
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }
+        ]
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        borderWidth: 0
+    },
+    series: [
+        {
+            name: 'Toyota',
+            data: [
+                26,
+                12,
+                14,
+                3
+            ]
+        },
+        {
+            name: 'GM',
+            data: [
+                50,
+                99,
+                25,
+                15,
+                34,
+                6,
+                1,
+                1
+            ]
+        },
+        {
+            name: 'Mopar',
+            data: [57,8,7,9,4,2,1]},{name: 'Ford',data: [7,2,4,3,1]}]
+}
+*/
