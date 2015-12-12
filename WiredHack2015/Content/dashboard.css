@@ -76,7 +76,7 @@ html, body, .body-content, .main, #map-canvas {
     border-bottom: 1px solid #eee;
 }
 .navigator {
-    height: inherit;
+    height: 44px;
 }
 .navigator-btn {
     margin-left: 4%;

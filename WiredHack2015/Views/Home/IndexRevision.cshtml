@@ -1,5 +1,4 @@
-﻿@using WiredHack2015.Controllers
-@{
+﻿@{
     ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -10,25 +9,30 @@
 @section scripts {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7gDxA9BImm7yWdLrU8OGGC21jSFr2LIo&libraries=visualization"></script>
     <script>
+        var mapData = [];
+        var map;
+        var mapMarkers = [];
+        var mapLatLngs = [];
+
         function DebugPrint(value) {
             console.log(value);
         }
 
-        $(function () {
+        $(function() {
             $('#slider').slider({
                 range: 'min',
                 value: 50,
                 min: 10,
                 max: 700,
                 step: 10,
-                slide: function (event, ui) {
+                slide: function(event, ui) {
                     $('#Radius').val(ui.value);
                 }
             });
 
             $('#Radius').val($('#slider').slider('value'));
 
-            $("#mapSelect").click(function () {
+            $("#mapSelect").click(function() {
                 $("#mapDiv").slideDown(600);
                 $("#tableDiv").slideUp(600);
                 $("#chartDiv").slideUp(600);
@@ -38,7 +42,7 @@
                 $("#chartSelect").removeClass("active");
             });
 
-            $("#tableSelect").click(function () {
+            $("#tableSelect").click(function() {
                 $("#mapDiv").slideUp(600);
                 $("#tableDiv").slideDown(600);
                 $("#chartDiv").slideUp(600);
@@ -48,7 +52,7 @@
                 $("#chartSelect").removeClass("active");
             });
 
-            $("#chartSelect").click(function () {
+            $("#chartSelect").click(function() {
                 $("#mapDiv").slideUp(600);
                 $("#tableDiv").slideUp(600);
                 $("#chartDiv").slideDown(600);
@@ -60,84 +64,52 @@
 
             // Load initial brand list
             $.ajax({
-                method: 'GET',
-                url: '/API/Brands'
-            })
-            .done(function (resStr) {
-                var jsonData = JSON.parse(resStr);
-                if (jsonData['result'] == '0') {
-                    $('#Brand').html('<option value="All">All</option>');
-                    var data = jsonData['data'];
-                    for (var idx in data) {
-                        $('#Brand').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                    method: 'GET',
+                    url: '/API/Brands'
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#Brand').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#Brand').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                        }
+                    } else {
+                        alert(jsonData['resultmessage']);
                     }
-                }
-                else {
-                    alert(jsonData['resultmessage']);
-                }
-            })
-            .fail(function (err) {
-                // error
-            });
+                })
+                .fail(function(err) {
+                    // error
+                });
 
             // Load initial state list
             $.ajax({
-                method: 'GET',
-                url: '/API/States'
-            })
-            .done(function (resStr) {
-                var jsonData = JSON.parse(resStr);
-                if (jsonData['result'] == '0') {
-                    $('#State').html('<option value="All">All</option>')
-                    var data = jsonData['data'];
-                    for (var idx in data) {
-                        $('#State').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                    method: 'GET',
+                    url: '/API/States'
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
+                        $('#State').html('<option value="All">All</option>');
+                        var data = jsonData['data'];
+                        for (var idx in data) {
+                            $('#State').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                        }
+                    } else {
+                        alert(dataObject.resultmessage);
                     }
-                }
-                else {
-                    alert(dataObject.resultmessage);
-                }
-            })
-            .fail(function (err) {
-                // error
-            });
+                })
+                .fail(function(err) {
+                    // error
+                });
 
             // Load initial city list
             $.ajax({
-                method: 'GET',
-                url: '/Api/CitiesFromState'
-            })
-            .done(function (resStr) {
-                var jsonData = JSON.parse(resStr);
-                if (jsonData['result'] == '0') {
-                    $('#City').html('<option value="All">All</option>');
-                    var data = jsonData['data'];
-                    for (var idx in data) {
-                        $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
-                    }
-                }
-                else {
-                    alert(jsonData['resultmessage']);
-                }
-            })
-            .fail(function (err) {
-                // error
-            });
-
-            // Load cities when the state selector changes
-            $('#State').change(function () {
-                var stateVal = encodeURIComponent($('#State').val());
-                var restURL = '/API/CitiesFromState';
-                
-                if (stateVal != 'All') {
-                    restURL += '?state=' + stateVal;
-                }
-
-                $.ajax({
                     method: 'GET',
-                    url: restURL
+                    url: '/Api/CitiesFromState'
                 })
-                .done(function (resStr) {
+                .done(function(resStr) {
                     var jsonData = JSON.parse(resStr);
                     if (jsonData['result'] == '0') {
                         $('#City').html('<option value="All">All</option>');
@@ -145,20 +117,67 @@
                         for (var idx in data) {
                             $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
                         }
-                    }
-                    else {
+                    } else {
                         alert(jsonData['resultmessage']);
                     }
                 })
-                .fail(function (err) {
+                .fail(function(err) {
                     // error
                 });
+
+            // Load cities when the state selector changes
+            $('#State').change(function() {
+                var stateVal = encodeURIComponent($('#State').val());
+                var restURL = '/API/CitiesFromState';
+
+                if (stateVal != 'All') {
+                    restURL += '?state=' + stateVal;
+                }
+
+                $.ajax({
+                        method: 'GET',
+                        url: restURL
+                    })
+                    .done(function(resStr) {
+                        var jsonData = JSON.parse(resStr);
+                        if (jsonData['result'] == '0') {
+                            $('#City').html('<option value="All">All</option>');
+                            var data = jsonData['data'];
+                            for (var idx in data) {
+                                $('#City').append('<option value="' + data[idx] + '">' + data[idx] + '</option>');
+                            }
+                        } else {
+                            alert(jsonData['resultmessage']);
+                        }
+                    })
+                    .fail(function(err) {
+                        // error
+                    });
             }); // end $('#State').change
 
             $(".date-picker").datepicker({
                 changeMonth: true,
                 changeYear: true
             });
+
+            $.ajax({
+                    method: 'GET',
+                    url: '/API/LatLngData'
+                }).done(function(data) {
+                    var jsonData = JSON.parse(data);
+                    if (jsonData['result'] == '0') {
+                        mapData = jsonData['data'];
+                        initMap();
+                    } else {
+                        alert(jsonData['resultmessage']);
+                        initMap();
+                    }
+                })
+                .fail(function(err) {
+                    initMap();
+                });
+
+            
         }); // end $(function () {})
 
         function search() {
@@ -167,58 +186,106 @@
             var state = encodeURIComponent($('#State').val());
             var city = encodeURIComponent($('#City').val());
             var dist = encodeURIComponent($('#Radius').val());
-            var restURL = '/API/LatLngData';
+            var restUrl = '/API/LatLngData';
 
             if (postal != '')
-                restURL += '?postalcode=' + postal;
+                restUrl += '?postalcode=' + postal;
 
             if (brand != 'All') {
-                restURL += (restURL.length > 15) ? '&brand=' : '?brand=';
-                restURL += brand;
+                restUrl += (restUrl.length > 15) ? '&brand=' : '?brand=';
+                restUrl += brand;
             }
 
             if (state != 'All') {
-                restURL += (restURL.length > 15) ? '&state=' : '?state=';
-                restURL += state;
+                restUrl += (restUrl.length > 15) ? '&state=' : '?state=';
+                restUrl += state;
             }
 
             if (city != 'All') {
-                restURL += (restURL.length > 15) ? '&city=' : '?city=';
-                restURL += city;
+                restUrl += (restUrl.length > 15) ? '&city=' : '?city=';
+                restUrl += city;
             }
 
             if (postal != '') {
-                restURL += (restURL.length > 15) ? '&distance=' : '?distance=';
-                restURL += dist;
+                restUrl += (restUrl.length > 15) ? '&distance=' : '?distance=';
+                restUrl += dist;
             }
 
-            DebugPrint('Searching ' + restURL);
+            DebugPrint('Searching ' + restUrl);
 
             $.ajax({
-                method: 'GET',
-                url: restURL
-            })
-            .done(function (resStr) {
-                var jsonData = JSON.parse(resStr);
-                if (jsonData['result'] == '0') {
+                    method: 'GET',
+                    url: restUrl
+                })
+                .done(function(resStr) {
+                    var jsonData = JSON.parse(resStr);
+                    if (jsonData['result'] == '0') {
 
-                } else {
-                    alert(jsonData['resultmessage']);
-                }
-            })
-            .fail(function (err) {
-                // error
-            });
+                    } else {
+                        alert(jsonData['resultmessage']);
+                    }
+                })
+                .fail(function(err) {
+                    // error
+                });
         } // end search
+
+
+        function initMap() {
+            var bounds = new google.maps.LatLngBounds();
+            var mapOptions =
+            {
+                zoom: 4,
+                center: new google.maps.LatLng(38.5000, -98.000),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+            for (var idx in mapData) {
+                var mapInfo = "<div class='info_content'>" +
+                    "<p><b>Dealer:</b> " + mapData[idx].DealerName + "</p>" +
+                    "<p><b>Brand:</b> " + mapData[idx].Brand + "</p>" +
+                    "<p><b>Address:</b></p>" +
+                    "<p>" + mapData[idx].Address1 + ", " + mapData[idx].City +
+                    ", " + mapData[idx].State + ", " + mapData[idx].PostalCode + "</p>";
+                var infoContent = new google.maps.InfoWindow({
+                    content: mapInfo
+                });
+                var latLng = new google.maps.LatLng(mapData[idx].Lat, mapData[idx].Lng);
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                });
+                marker.addListener('click', function() {
+                    infoContent.open(map, marker);
+                });
+                bounds.extend(latLng);
+            }
+            map.fitBounds(bounds);
+        }
+
+        function setMapOnAll(map) {
+            for (var i = 0; i < mapMarkers.length; i++) {
+                mapMarkers[i].setMap(map);
+            }
+        }
+
+        function clearAllMarkers() {
+            setMapOnAll(null);
+        }
+        function showAllMarkers() {
+            setMapOnAll(map);
+        }
     </script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
 }
 
-<div class="row">
+<div class="row full-row">
     <div class="col-sm-3 col-md-2 sidebar">
         <ul class="nav nav-sidebar">
             <li>
+                <div class="form-control">
                     <input class="form-control" id="ZipCode" name="ZipCode" placeholder="Search zip" type="text" value="">
 
                     <label for="Brand" class="">Brand</label>
@@ -231,13 +298,13 @@
                     <select class="form-control" id="City" name="City"></select>
 
 
-                    <input class="date-picker form-control hasDatepicker form-margin" data-val="true" data-val-date="The field DateBefore must be a date." data-val-required="The DateBefore field is required." id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
-                    <input class="date-picker form-control hasDatepicker form-margin" id="DateAfter" name="DateBefore" placeholder="Date Before" type="text" value="">
+                    <input class="date-picker form-control hasDatepicker form-margin" id="DateBefore" name="DateBefore" placeholder="Date Before" type="text" value="">
+                    <input class="date-picker form-control hasDatepicker form-margin" id="DateAfter" name="DateBefore" placeholder="Date After" type="text" value="">
 
                     <label for="Radius">Search Radius</label>
                     <div class="row">
                         <div class="col-md-3">
-                            <input class="form-control" id="Radius" disabled="disabled" />
+                            <input class="form-control" id="Radius" disabled="disabled"/>
                         </div>
                         <div class="col-md-9">
                             <div id="slider" class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
@@ -245,10 +312,13 @@
                                 <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0" style="left: 5.7971%;"></span>
                             </div>
                         </div>
-                        
+
                     </div>
-                    
+
                     <button onclick="search()" class="btn btn-default" style="margin-top: 10px;">Search</button>
+
+
+                </div>
             </li>
         </ul>
     </div>
