@@ -317,39 +317,11 @@ namespace WiredHack2015.Controllers
 
         public string DealerCountByBrandChart()
         {
-            List<ChartSeries<ChartSeriesData<int>>> seriesList = new List<ChartSeries<ChartSeriesData<int>>>();
-            List<DrillDownSeries<dynamic []>> drillDownList = new List<DrillDownSeries<dynamic[]>>();
+            List<ChartSeries<ChartSeriesData<int>>> chartSeries = new List<ChartSeries<ChartSeriesData<int>>>();
+            List<DrillDownSeriesItem<dynamic []>> drillDownSeries = new List<DrillDownSeriesItem<dynamic[]>>();
 
             var brands = dbContext.stgDealers.Select(s => s.BrandName).Distinct().ToList();
-
-            /*
-            {
-                name: 'Dealers',
-                colorByPoint: true,
-                data: [
-                    {
-                        name: 'Toyota',
-                        y: 55,
-                        drilldown: 'ToyotaYears'
-                    },
-                    {
-                        name: 'GM',
-                        y: 231,
-                        drilldown: 'GMYears'
-                    },
-                    {
-                        name: 'Mopar',
-                        y: 88,
-                        drilldown: 'MoparYears'
-                    },
-                    {
-                        name: 'Ford',
-                        y: 17,
-                        drilldown: 'FordYears'
-                    }
-                ]
-            }
-            */
+            var brandYears = dbContext.stgDealers.Select(s => s.SignedOn.Value.Year).Distinct().ToList();
 
             var newSeries = new ChartSeries<ChartSeriesData<int>>();
             newSeries.name = "Dealers";
@@ -357,7 +329,6 @@ namespace WiredHack2015.Controllers
 
             foreach (var brand in brands)
             {
-                
                 int dealerCount = dbContext.stgDealers.Where(s => s.BrandName == brand).Count();
                 newSeries.data.Add(new ChartSeriesData<int>
                 {
@@ -365,9 +336,64 @@ namespace WiredHack2015.Controllers
                     y = dealerCount,
                     drilldown = brand + "Years"
                 });
+
+                var dditem = new DrillDownSeriesItem<dynamic[]>();
+
+                foreach (var year in brandYears)
+                {
+                    int brandYearCount = dbContext.stgDealers
+                        .Where(s => s.BrandName == brand)
+                        .Where(s => s.SignedOn.Value.Year == year)
+                        .Count();
+
+                    dditem.id = brand + "Years";
+                    dditem.data.Add(new dynamic[] { year.ToString(), brandYearCount });
+                }
+
+                drillDownSeries.Add(dditem);
             }
 
-            return new JavaScriptSerializer().Serialize(newSeries);
+            chartSeries.Add(newSeries);
+
+            var chartOutput = new
+            {
+                chart = new
+                {
+                    height = 400,
+                    width = 400,
+                    type = "pie"
+                },
+                title = new
+                {
+                    text = "Dealer Count by Brand"
+                },
+                xAxis = new
+                {
+                    type = "category"
+                },
+                legend = new
+                {
+                    enabled = false
+                },
+                plotOptions = new
+                {
+                    series = new
+                    {
+                        borderWidth = 0,
+                        dataLabels = new
+                        {
+                            enabled = true
+                        }
+                    }
+                },
+                series = chartSeries,
+                drilldown = new
+                {
+                    series = drillDownSeries
+                }
+            };
+
+            return new JavaScriptSerializer().Serialize(chartOutput);
         }
     } // end class APIController
 
@@ -390,133 +416,14 @@ namespace WiredHack2015.Controllers
         public string drilldown { get; set; }
     }
 
-    public class DrillDownSeries<Tx>
+    public class DrillDownSeriesItem<Tx>
     {
         public string id { get; set; }
         public List<Tx> data { get; set; }
 
-        public DrillDownSeries()
+        public DrillDownSeriesItem()
         {
             data = new List<Tx>();
         }
     }
 } // end namespace
-
-/*
-$('#byBrandPie').highcharts({
-                chart: {
-                    height: 400,
-                    width: 400,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Dealer Count by Brand'
-                },
-                xAxis: {
-                    type: 'category'
-                },
-
-                legend: {
-                    enabled: false
-                },
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true
-                        }
-                    }
-                },
-                series: [{
-                    name: 'Dealers',
-                    colorByPoint: true,
-                    data: [
-                        {
-                            name: 'Toyota',
-                            y: 55,
-                            drilldown: 'ToyotaYears'
-                        },
-                        {
-                            name: 'GM',
-                            y: 231,
-                            drilldown: 'GMYears'
-                        },
-                        {
-                            name: 'Mopar',
-                            y: 88,
-                            drilldown: 'MoparYears'
-                        },
-                        {
-                            name: 'Ford',
-                            y: 17,
-                            drilldown: 'FordYears'
-                        }
-                    ]
-                }],
-                drilldown: {
-                    series: [
-                        {
-                            id: 'ToyotaYears',
-                            data: [
-                                ['2008', 26],
-                                ['2006', 0],
-                                ['2007', 14],
-                                ['2013', 0],
-                                ['2009', 12],
-                                ['2004', 0],
-                                ['2014', 0],
-                                ['2010', 3],
-                                ['2005', 0],
-                                ['2011', 0]
-                            ]
-                        },
-                        {
-                            id: 'GMYears',
-                            data: [
-                                ['2008', 25],
-                                ['2006', 50],
-                                ['2007', 99],
-                                ['2013', 1],
-                                ['2009', 6],
-                                ['2004', 15],
-                                ['2014', 0],
-                                ['2010', 1],
-                                ['2005', 34],
-                                ['2011', 0]
-                            ]
-                        },
-                        {
-                            id: 'MoparYears',
-                            data: [
-                                ['2008', 7],
-                                ['2006', 4],
-                                ['2007', 8],
-                                ['2013', 57],
-                                ['2009', 0],
-                                ['2004', 0],
-                                ['2014', 9],
-                                ['2010', 1],
-                                ['2005', 0],
-                                ['2011', 2]
-                            ]
-                        },
-                        {
-                            id: 'FordYears',
-                            data: [
-                                ['2008', 0],
-                                ['2006', 3],
-                                ['2007', 2],
-                                ['2013', 1],
-                                ['2009', 7],
-                                ['2004', 0],
-                                ['2014', 0],
-                                ['2010', 4],
-                                ['2005', 0],
-                                ['2011', 0]
-                            ]
-                        }
-                    ]
-                }
-            });
-        });
-*/
